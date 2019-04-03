@@ -1,0 +1,9 @@
+Project: 
+    ☐ Create Error Type
+    ☐ Options 
+        ☐ URL
+        ☐ Application Name
+        ☐ Add Metas (guid) or function to *prepare* payload
+    ☐ Maybe create a _mock_ version
+    ☐ Should be able to listen event before creating the Exchange
+
