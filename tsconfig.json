@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "outDir": "./build/",
+        "module": "commonjs",
+        "target": "es6",
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "removeComments": false,
+        "strict": true,
+        "baseUrl": ".",
+        "lib": [
+            "dom",
+            "es2017",
+            "esnext.asynciterable"
+        ]
+    },
+    "include": [
+        "./src/**/*.ts"
+    ],
+    "exclude": [
+        "./node_modules",
+        "./data/",
+        "./src/**/test/*.test.ts",
+        "./test/"
+    ]
+}

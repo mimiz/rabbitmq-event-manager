@@ -8,7 +8,7 @@ Exchanges and Queues are automatically created.
 
 * **Consumer**
 ```js
-const EventManager = require('amqp-event-manager');
+const EventManager = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     console.log(payload);
@@ -18,7 +18,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 
 * **Producer**
 ```js
-const EventManager = require('amqp-event-manager');
+const EventManager = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost', appName:'PRODUCER_1'});
 
 myEventManager.emit('MY_EVENT_NAME', payload);
@@ -26,13 +26,13 @@ myEventManager.emit('MY_EVENT_NAME', payload);
 
 This will create the following elements in RabbitMQ : 
 
-* An Exchange of type **fanout** named : `PRODUCER.MY_EVENT_NAME`
-* Two Queues `CONSUMER::PRODUCER.MY_EVENT_NAME` bound to the Exchange `PRODUCER.MY_EVENT_NAME`
+* An Exchange of type **fanout** named : `PRODUCER_1.MY_EVENT_NAME`
+* One Queues `CONSUMER::PRODUCER_1.MY_EVENT_NAME` bound to the Exchange `PRODUCER_1.MY_EVENT_NAME`
 
 If a new Consumer is created and listen the same event : 
 
 ```js
-const EventManager = require('amqp-event-manager');
+const EventManager = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     console.log(payload);
@@ -40,7 +40,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 });
 ```
 
-It will add a queue `OTHER_CONSUMER::PRODUCER.MY_EVENT_NAME` bound to the Exchange `PRODUCER.MY_EVENT_NAME`.
+It will add a queue `OTHER_CONSUMER::PRODUCER_1.MY_EVENT_NAME` bound to the Exchange `PRODUCER_1.MY_EVENT_NAME`.
 
 ## Options
 
@@ -92,7 +92,7 @@ You can also override the metas generation by setting a function as *metas* opti
 ### With no metas
 
 ```js
-const EventManager = require('amqp-event-manager');
+const EventManager = require('rabbitmq-event-manager');
 const myEventManagerWithNoMetas = new EventManager({
     url: 'amqp://localhost', 
     appName: 'PRODUCER_1',
@@ -108,7 +108,7 @@ myEventManagerWithNoMetas.emit('MY_EVENT_NAME', payload);
 
 ### Override Metas
 ```js
-const EventManager = require('amqp-event-manager');
+const EventManager = require('rabbitmq-event-manager');
 const myEventManagerOverrideMetas = new EventManager({
     url: 'amqp://localhost', 
     appName: 'PRODUCER_1',
@@ -160,7 +160,16 @@ The names of the queue and the exchange can be changed by setting the options pr
 ## Acknowledge / N-Acknowledge
 
 ```js
-const EventManager = require('amqp-event-manager');
+const {EventManager} = require('rabbitmq-event-manager');
+const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
+myEventManager.on('MY_EVENT_NAME', async (payload)=>{
+    return true; // the message will be acknoledge
+});
+```
+
+
+```js
+const {EventManager, DoNotRetryError} = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     throw new DoNotRetryError('The message is malformed');
@@ -168,7 +177,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 ```
 
 ```js
-const EventManager = require('amqp-event-manager');
+const {EventManager, RetryLaterError} = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     throw new RetryLaterError('The message is malformed', 300); // In seconds

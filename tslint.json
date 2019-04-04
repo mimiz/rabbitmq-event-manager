@@ -1,0 +1,28 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-config-prettier",
+    "tslint-no-unused-expression-chai"
+  ],
+  "rules": {
+    "no-var-requires": false,
+    "ordered-imports": true,
+    "member-ordering": [
+      false
+    ],
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-console": true,
+    "no-submodule-imports": [
+        true,
+        "graphql-voyager/middleware",
+        "graphql/language",
+        "graphql/utilities",
+        "graphql/validation"
+    ]
+  }
+}
