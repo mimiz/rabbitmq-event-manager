@@ -16,13 +16,6 @@
     ],
     "object-literal-sort-keys": false,
     "no-shadowed-variable": false,
-    "no-console": true,
-    "no-submodule-imports": [
-        true,
-        "graphql-voyager/middleware",
-        "graphql/language",
-        "graphql/utilities",
-        "graphql/validation"
-    ]
+    "no-console": true
   }
 }

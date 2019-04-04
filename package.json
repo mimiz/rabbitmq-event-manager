@@ -13,8 +13,8 @@
     "lint:quality": "yarn run precommit:quality src/**/*.ts test/**/*.ts",
     "lint:format:fix": "yarn run lint:format --write",
     "lint:quality:fix": "yarn run lint:quality --fix",
-    "precommit:format": "prettier --check",
-    "precommit:quality": "tslint"
+    "precommit:format": "prettier --check \"./{src,test}/**/*.ts\"",
+    "precommit:quality": "tslint src/**/*.ts test/**/*.ts"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -36,11 +36,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn precommit:format && yarn precommit:quality",
+      "pre-push": "yarn test"
     }
-  },
-  "lint-staged": {
-    "src/**/*.ts": "yarn run precommit:format",
-    "src/**/*.ts": "yarn run precommit:quality"
   }
 }
