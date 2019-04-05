@@ -26,8 +26,10 @@ myEventManager.emit('MY_EVENT_NAME', payload);
 
 This will create the following elements in RabbitMQ : 
 
-* An Exchange of type **fanout** named : `PRODUCER_1.MY_EVENT_NAME`
-* One Queues `CONSUMER::PRODUCER_1.MY_EVENT_NAME` bound to the Exchange `PRODUCER_1.MY_EVENT_NAME`
+* An Exchange of type **fanout** named : `MY_EVENT_NAME` **(the appName is not USED)**
+* One Queues `CONSUMER::MY_EVENT_NAME` bound to the Exchange `MY_EVENT_NAME`
+
+> NOTE: :warning: A very good convention may be to prefix the name of the event with the emitter application name, for example : `PRODUCER_1.MY_EVENT_NAME` but it's not mandatory.
 
 If a new Consumer is created and listen the same event : 
 
@@ -40,7 +42,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 });
 ```
 
-It will add a queue `OTHER_CONSUMER::PRODUCER_1.MY_EVENT_NAME` bound to the Exchange `PRODUCER_1.MY_EVENT_NAME`.
+It will add a queue `OTHER_CONSUMER::MY_EVENT_NAME` bound to the Exchange `MY_EVENT_NAME`.
 
 ## Options
 
@@ -63,6 +65,7 @@ By defaut, some metas data are added to the payload :
 * guid : A unique id generated, to be able to debug for example, or for following the event.
 * timestamp : A number of milliseconds elapsed since January 1, 1970 00:00:00 UTC. (`Date.now()`)
 * name : A string which is the name of the emitted event.
+* applicationName: The value of the application which emits the Event.
 
 So if your payload is : 
 
@@ -79,15 +82,16 @@ With Metas data it will be :
     _metas:{
         guid: '465e008c-d37f-4e31-b494-023e6d187946',
         name: 'MY_EVENT_NAME',
-        timestamp: 1519211809934
+        timestamp: 1519211809934,
+        applicationName: 'PRODUCER_1'
     },
     userId:42
 }
 ```
 
-You can remove that meta information by settings the option value "metas" to false.
+You can remove metas informations by settings the option value "metas" to false.
 
-You can also override the metas generation by setting a function as *metas* options value (on the emitter side only, as the event is generated there).
+You can also override the metas generation by giving a function as *metas* options value (on the emitter side only, as the event is generated there).
 
 ### With no metas
 
@@ -183,3 +187,27 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     throw new RetryLaterError('The message is malformed', 300); // In seconds
 });
 ```
+
+## NOTES :
+
+### ADR : Should we integrate the application name in the event name 
+
+In a world of *events* an event is fired, and some listeners will listen some events.
+So with events sent by "Application", if we have an Application `UserAdminApp` which will send the event 'USER_CREATED', and we have an other application (WelcomeEmail) (or service) wanted to send on email to new users ... 
+So let's define that  `WelcomeEmail` is listening USER_CREATED, it should knows that the event was fired by the `UserAdminApp`, but does we need to add the name of the application in event payload (_metas), or in the event name.
+
+On the `WelcomeEmail` side : 
+```ts
+myEventManager.on('UserAdminApp.USER_CREATED', (payload)=>{ /* ... */ });
+```
+Or
+
+```ts
+myEventManager.on('USER_CREATED', (payload)=>{ /* 
+    payload._metas.application = UserAdminApp
+*/ });
+```
+
+If we consider **RabbitMQ** it means that the Exchange name will be `UserAdminApp.USER_CREATED` or `USER_CREATED`, so listening queues will be bound to the exchange.
+
+Regarding this, I really think that the event should be `USER_CREATED` without any consideration of the application name, but as it is important to be able to know which application fires wich event, we may add the application name in the _metas information of the event's payload;
