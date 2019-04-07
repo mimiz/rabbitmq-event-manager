@@ -51,8 +51,8 @@ Name | Type | Default | Description
 url | String | `amqp://localhost` | The connection URL of the RabbitMQ Server
 appName | String | - | The name of the application (used for naming exchanges and queues).
 metas | boolean or (function) | true | Weither or not to add `_metas` infirmations in the event, If a function this returned value, will become the  `_metas` object (see <Metas Informations>) 
-deadLetterExchangeName | String | `DEAD_LETTER_EXCHANGE` | TODO
-deadLetterQueueName | String | `DEAD_LETTER_QUEUE` | TODO
+alternateExchangeName | String | `DEAD_LETTER_EXCHANGE` | TODO
+alternateQueueName | String | `DEAD_LETTER_QUEUE` | TODO
 deadLetterExchangeName | String | `NO_QUEUE_EXCHANGE` | TODO
 deadLetterQueueName | String | `QUEUE_NO_QUEUE` | TODO
 ttl | Number | `86400000` (24h) | TODO
@@ -211,3 +211,26 @@ myEventManager.on('USER_CREATED', (payload)=>{ /*
 If we consider **RabbitMQ** it means that the Exchange name will be `UserAdminApp.USER_CREATED` or `USER_CREATED`, so listening queues will be bound to the exchange.
 
 Regarding this, I really think that the event should be `USER_CREATED` without any consideration of the application name, but as it is important to be able to know which application fires wich event, we may add the application name in the _metas information of the event's payload;
+
+### Others ...
+
+* If the _"Alternate Exchange"_ was not created first it's not a problem, as it's configured, the only thing is that if one message is sent to the exchange 'My_EVENT', and the _"Alternate Exchange"_ does not exists (if no queues are bound to the exchange 'My_EVENT'), the message will be lost ! 
+
+* When we listen to an event :
+```ts
+const EventManager = require('rabbitmq-event-manager');
+const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'CONSUMER');
+myEventManager.on('MY_EVENT_NAME', async (payload)=>{
+    console.log(payload);
+    return true;
+});
+```
+It will automatically create an exchange of name `MY_EVENT_NAME`, and a Queue : `CONSUMER::MY_EVENT_NAME` bound to that exchange. 
+
+The Queue `CONSUMER::MY_EVENT_NAME` is configured with the _DEAD LETTER EXHANGE_, even if that exchange does not exists yet. It means that if a `MY_EVENT_NAME` is emmited, and the "listener" mark the event to be flush (dead lettered), the message will be lost (as no _DEAD LETTER EXHANGE_ is define, so ne queue are bound to it...).
+
+:warning: In RabbitMQ only queue store messages, not exchangesso it's important that you initialize your rabbitMQ instance with the values of _alternateExchangeName_,  _alternateQueueName_,  _deadLetterExchangeName_, and  _deadLetterQueueName_
+
+
+
+
