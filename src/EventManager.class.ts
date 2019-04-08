@@ -5,7 +5,7 @@ import { EventManagerError } from "./lib/EventManagerError";
 import {
   EventHandlerFunction,
   IEventManagerOptions,
-  IPayload,
+  IEventPayload,
   OverrideMetasFunction
 } from "./lib/interfaces";
 import { LOGGER } from "./lib/logger";
@@ -41,7 +41,7 @@ export class EventManager {
       throw new EventManagerError(`Unable to listen event ${eventName}`, e);
     }
   }
-  public async emit(eventName: string, payload: IPayload): Promise<void> {
+  public async emit(eventName: string, payload: IEventPayload): Promise<void> {
     try {
       // we should create the metas information here
       payload = this.addMetasToPayload(payload, eventName);
@@ -62,7 +62,10 @@ export class EventManager {
     return adapter.close();
   }
 
-  private addMetasToPayload(payload: IPayload, eventName: string): IPayload {
+  private addMetasToPayload(
+    payload: IEventPayload,
+    eventName: string
+  ): IEventPayload {
     if (!this.options.metas) {
       return payload;
     } else {

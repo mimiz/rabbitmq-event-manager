@@ -3,7 +3,7 @@ import { EventManagerError } from "../lib/EventManagerError";
 import {
   EventHandlerFunction,
   IEventManagerOptions,
-  IPayload
+  IEventPayload
 } from "../lib/interfaces";
 import { LOGGER } from "../lib/logger";
 
@@ -71,7 +71,7 @@ export async function createExchange(
 export function publish(
   channel: amqp.ConfirmChannel,
   exchangeName: string,
-  payload: IPayload,
+  payload: IEventPayload,
   options: IEventManagerOptions
 ): Promise<boolean> {
   return new Promise((resolve, reject) => {

@@ -1,18 +1,20 @@
-export interface IPayloadMetas {
+export interface IEventPayloadMetas {
   guid: string;
   name: string;
   application: string;
   timestamp: number;
   [k: string]: any;
 }
-export interface IPayload {
+export interface IEventPayload {
   [k: string]: any;
-  _metas?: IPayloadMetas;
+  _metas?: IEventPayloadMetas;
 }
 export type EventHandlerFunction = (
-  payload: IPayload
+  payload: IEventPayload
 ) => void | Promise<boolean>;
-export type OverrideMetasFunction = (metas: IPayloadMetas) => IPayloadMetas;
+export type OverrideMetasFunction = (
+  metas: IEventPayloadMetas
+) => IEventPayloadMetas;
 export interface IEventManagerOptions {
   url: string;
   application: string;
