@@ -180,8 +180,6 @@ export function consume(
             }
           } catch (e) {
             channel.nack(message, false, false);
-            LOGGER.error(`Error Parsing message :`);
-            LOGGER.error(e);
             reject(
               new EventManagerError(`[RABBITMQ] - Error Parsing message`, e)
             );
@@ -189,16 +187,12 @@ export function consume(
         } else {
           reject(
             new EventManagerError(
-              `[RABBITMQ] - Message received is null : ${JSON.stringify(
-                message
-              )}`
+              `[RABBITMQ] - Message received is null or not defined`
             )
           );
         }
       });
     } catch (e) {
-      LOGGER.error(`Error Consuming queue :`);
-      LOGGER.error(e);
       reject(new EventManagerError(`[RABBITMQ] - Error Consuming queue.`, e));
     }
   });
