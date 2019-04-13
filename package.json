@@ -5,7 +5,7 @@
     "name": "Rémi Goyard",
     "url": "https://www.mimiz.fr"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "build/index.js",
   "types": "build/index.d.js",
   "license": "MIT",
