@@ -4,6 +4,7 @@ npm-debug.log*
 build/
 dist/
 docs/
+package/
 # Runtime data
 pids
 *.pid
