@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import * as adapter from "../src/adapter";
 import EventManager from "../src/index";
 import { IEventManagerOptions } from "../src/lib/interfaces";
+import { EventManagerError } from "../src/lib/EventManagerError";
 describe("RabbitMQ Event Manager, emitting events ", () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
@@ -156,5 +157,27 @@ describe("RabbitMQ Event Manager, emitting events ", () => {
 
     /** then */
     expect(publishStub.args[0][2]).to.not.have.property("_metas");
+  });
+
+  it(`Should throws Error wirt root cause when error while emiting`, done => {
+    /** given */
+    const createChannelStub = sandbox.stub(adapter, "createChannel");
+    const rootCauseError = new Error("Unable to Create Channel");
+    createChannelStub.throws(rootCauseError);
+
+    const eventManager = new EventManager();
+    /** when */
+    eventManager
+      .emit("event_name", {})
+      .then(() => {
+        done(new Error("Should not resolve emitter"));
+      })
+      .catch(err => {
+        /** then */
+        expect(err).to.be.an.instanceOf(EventManagerError);
+        expect(err.message).to.equal(`Unable to emit event event_name`);
+        expect(err.cause).to.equal(rootCauseError);
+        done();
+      });
   });
 });

@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import * as adapter from "../src/adapter";
 import EventManager from "../src/index";
 import { IEventManagerOptions } from "../src/lib/interfaces";
+import { EventManagerError } from "../src/lib/EventManagerError";
 describe("RabbitMQ Event Manager, Listening events ", () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
@@ -89,13 +90,29 @@ describe("RabbitMQ Event Manager, Listening events ", () => {
     });
   });
 
-  it.skip(`Should call nack if rejected `, async () => {
+  it(`Should throw an error if something went wrong while listening`, done => {
     /** given */
+    const createChannelStub = sandbox.stub(adapter, "createChannel");
+    const rootCauseError = new Error("Unable to Create Channel");
+    createChannelStub.throws(rootCauseError);
+    const eventManager = new EventManager();
+    const payloadHandler = sandbox.stub().callsFake(() => {
+      done();
+    });
 
-    /** when */
-
-    /** then */
-    expect(true).to.not.equal(false);
+    /** When */
+    eventManager
+      .on("event_name_listen", payloadHandler)
+      .catch((err: EventManagerError) => {
+        /** then */
+        expect(err).to.be.an.instanceOf(EventManagerError);
+        expect(err.message).to.equal(
+          `Unable to listen event event_name_listen`
+        );
+        expect(err.cause).to.equal(rootCauseError);
+        expect(payloadHandler.called).to.equal(false);
+        done();
+      });
   });
 
   it.skip(`Should be able to "init" rabbitmq, creating exhange and queues`, async () => {

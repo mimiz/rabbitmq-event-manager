@@ -1,14 +1,14 @@
 Project: 
-    ☐ Create Error Type
+    ✔ Create Error Type @done(19-04-13 09:17)
         ✔ EventManagerError @started(19-04-06 09:54) @done(19-04-06 09:54) @lasted(46s)
-        ☐ DoNotRetryError
-        ☐ RetryLaterError
-    ☐ Options 
+        ✘ DoNotRetryError @cancelled(19-04-13 09:17) We will do it another way
+        ✘ RetryLaterError => This need to add some work => v2 ? @cancelled(19-04-13 09:16)
+    ✔ Options @done(19-04-13 09:17)
         ✔ URL @done(19-04-06 09:55)
         ✔ Application Name @done(19-04-06 09:55)
         ✔ Add Metas (guid) or function to *prepare* payload @done(19-04-06 09:55)
-    ☐ Maybe create a _mock_ version
-    ☐ Should be able to listen event before creating the Exchange
-    ☐ Ajouter du "logging" 
+    ✘ ~~Maybe create a _mock_ version~~ @cancelled(19-04-13 09:16)
+    ✔ Should be able to listen event before creating the Exchange @done(19-04-13 09:16)
+    ☐ Ajouter du "logging" @started(19-04-13 09:15)
     ☐ Ajouter une "validation" des options ?
     ☐ Add an _"init"_ method

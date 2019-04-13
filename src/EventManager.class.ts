@@ -36,8 +36,7 @@ export class EventManager {
       });
       await adapter.consume(channel, queueName, listener, this.options);
     } catch (e) {
-      LOGGER.error("AAAA");
-      LOGGER.error(e);
+      LOGGER.error(`Unable to listen event ${eventName}`, e);
       throw new EventManagerError(`Unable to listen event ${eventName}`, e);
     }
   }
@@ -59,7 +58,7 @@ export class EventManager {
   }
 
   public async close() {
-    return adapter.close();
+    return adapter.disconnect();
   }
 
   private addMetasToPayload(

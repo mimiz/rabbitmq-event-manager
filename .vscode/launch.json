@@ -6,7 +6,7 @@
     "configurations": [{
             "type": "node",
             "request": "launch",
-            "name": "Mocha File API",
+            "name": "Mocha File",
             "env": {
                 "NODE_ENV": "test"
             },

@@ -10,6 +10,11 @@ import { LOGGER } from "../lib/logger";
 let connection: amqp.Connection | null = null;
 let channel: amqp.ConfirmChannel | null = null;
 
+/**
+ * Connect to the rabbitMQ server.
+ *
+ * @param url The url of the RabbitMQ Server (including crentials and vhosts)
+ */
 export async function connect(url: string): Promise<amqp.Connection> {
   try {
     if (connection === null) {
@@ -17,8 +22,7 @@ export async function connect(url: string): Promise<amqp.Connection> {
     }
     return connection;
   } catch (e) {
-    LOGGER.error("Unable to connect to RabbitMq Server");
-    LOGGER.error(e);
+    LOGGER.error("Unable to connect to RabbitMq Server", e);
     throw new EventManagerError(
       "[RABBITMQ] - Unable to connect to RabbitMq Server",
       e
@@ -26,6 +30,19 @@ export async function connect(url: string): Promise<amqp.Connection> {
   }
 }
 
+/**
+ * Disconnect everything from RabbitMQ
+ */
+export async function disconnect(): Promise<void> {
+  if (channel) {
+    await channel.close();
+    channel = null;
+  }
+  if (connection) {
+    await connection.close();
+    connection = null;
+  }
+}
 export async function createChannel(url: string): Promise<amqp.ConfirmChannel> {
   try {
     if (channel === null) {
@@ -34,19 +51,12 @@ export async function createChannel(url: string): Promise<amqp.ConfirmChannel> {
     }
     return channel;
   } catch (e) {
-    LOGGER.error("Unable to create a channel on to RabbitMq Server");
-    LOGGER.error(e);
+    LOGGER.error("Unable to create a channel on to RabbitMq Server", e);
     throw new EventManagerError(
-      "[RABBITMQ] - Unable to create a channel on to RabbitMq Server"
+      "[RABBITMQ] - Unable to create a channel on to RabbitMq Server",
+      e
     );
   }
-}
-
-export async function close(): Promise<void> {
-  if (connection) {
-    await connection.close();
-  }
-  return;
 }
 
 export async function createExchange(
@@ -88,7 +98,7 @@ export function publish(
       },
       err => {
         if (err) {
-          LOGGER.error(err);
+          LOGGER.error("Unable to publish", err);
           reject(err);
         } else {
           resolve(true);
@@ -132,13 +142,11 @@ export function consume(
               message.fields.deliveryTag > options.maxNumberOfMessagesRetries
             ) {
               channel.nack(message, false, false);
+              const id = payload._metas.guid;
+              const max = options.maxNumberOfMessagesRetries;
               reject(
                 new EventManagerError(
-                  `[RABBITMQ] - Event with id ${
-                    payload._metas.guid
-                  } has been retried more than ${
-                    options.maxNumberOfMessagesRetries
-                  }, so it's rejected`
+                  `[RABBITMQ] - Event with ${id} has been retried more than ${max} times`
                 )
               );
             } else {
@@ -153,17 +161,12 @@ export function consume(
                       channel.nack(message);
                       reject(
                         new EventManagerError(
-                          "[RABBITMQ] - Listener of event returned not true."
+                          "[RABBITMQ] - Listener of event returned not true, so requeue message."
                         )
                       );
                     }
                   })
                   .catch(err => {
-                    /* if (err.message === EventErrorMessages.FLUSH) {
-                                            channel.nack(message, false, false);
-                                        } else {
-                                            channel.nack(message);
-                                        } */
                     channel.nack(message, false, false);
                     reject(
                       new EventManagerError(
