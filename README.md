@@ -4,6 +4,10 @@ A Node Event Manager using RabbitMQ to exchange events.
 
 Exchanges and Queues are automatically created.
 
+Here is a little schema : 
+
+![RabbitMQ Schema](./doc/RABBITMQ-Schema.png)
+
 ## Basic Example
 
 * **Consumer**
@@ -15,6 +19,11 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     return true;
 });
 ```
+The `return` statement at the end of the handler function, will tell RabbitMQ to _"acknowledge"_ the message.
+
+You can _"negatively acknowledge"_ and **Requeue** the message by returning `false` (rejecting the Promise).
+
+If you don't want to **requeue** the message you can simply throw an exception ...
 
 * **Producer**
 ```js
@@ -51,12 +60,12 @@ Name | Type | Default | Description
 url | String | `amqp://localhost` | The connection URL of the RabbitMQ Server
 appName | String | - | The name of the application (used for naming exchanges and queues).
 metas | boolean or (function) | true | Weither or not to add `_metas` infirmations in the event, If a function this returned value, will become the  `_metas` object (see <Metas Informations>) 
-alternateExchangeName | String | `DEAD_LETTER_EXCHANGE` | TODO
-alternateQueueName | String | `DEAD_LETTER_QUEUE` | TODO
-deadLetterExchangeName | String | `NO_QUEUE_EXCHANGE` | TODO
-deadLetterQueueName | String | `QUEUE_NO_QUEUE` | TODO
-ttl | Number | `86400000` (24h) | TODO
-maxNumberOfMessagesRetries | Numbner | `100` | TODO
+alternateExchangeName | String | `DEAD_LETTER_EXCHANGE` | The name of the dead letter exchange you would like to use, (:warning: remember this must be the same value for producer and consumers)
+alternateQueueName | String | `DEAD_LETTER_QUEUE` |  The name of the dead letter queue (bound to the dead letter exhange) you would like to use, (:warning: remember this must be the same value for producer and consumers)
+deadLetterExchangeName | String | `NO_QUEUE_EXCHANGE` |  The name of the alternate exchange you would like to use, (:warning: remember this must be the same value for producer and consumers)
+deadLetterQueueName | String | `QUEUE_NO_QUEUE` | The name of the alternate exchange queue you would like to use, (:warning: remember this must be the same value for producer and consumers)
+ttl | Number | `86400000` (24h) | The default TTL before flushing event to the Dead Letter Echange
+maxNumberOfMessagesRetries | Numbner | `100` | The number of tries the consumer will treat one specific message, before flushing it to the dead letter exhange.
 
 ## Metas Informations
 
@@ -163,34 +172,54 @@ The names of the queue and the exchange can be changed by setting the options pr
 
 ## Acknowledge / N-Acknowledge
 
+The `return` statement at the end of the handler function, will tell RabbitMQ to _"acknowledge"_ the message.
+
+You can _"negatively acknowledge"_ and **Requeue** the message by returning `false` (rejecting the Promise).
+
+If you don't want to **requeue** the message you can simply throw an exception ...
+
+### Acknowledge the message (remove from queue)
+
 ```js
 const {EventManager} = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     return true; // the message will be acknoledge
+    // or even
+    // return;
+    // or nothing
 });
 ```
+
+After the message is acknowledged, it will be removed from the queue and deleted.
+
+### Negatively Acknowledge and Requeue the message
+
+```js
+const {EventManager} = require('rabbitmq-event-manager');
+const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
+myEventManager.on('MY_EVENT_NAME', async (payload)=>{
+    return false; // the message will be acknoledge
+    
+});
+```
+
+### Negatively Acknowledge and Flush the message
 
 
 ```js
-const {EventManager, DoNotRetryError} = require('rabbitmq-event-manager');
+const {EventManager} = require('rabbitmq-event-manager');
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
-    throw new DoNotRetryError('The message is malformed');
+    throw new Error('This will flush the message to DEAD LETTER QUEUE')
 });
 ```
 
-```js
-const {EventManager, RetryLaterError} = require('rabbitmq-event-manager');
-const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
-myEventManager.on('MY_EVENT_NAME', async (payload)=>{
-    throw new RetryLaterError('The message is malformed', 300); // In seconds
-});
-```
+After the message is negatively acknowledged, it will be send to the Dead Letter Exhange, so in the queue DEAD_LETTER_QUEUE.
 
 ## NOTES :
 
-### ADR : Should we integrate the application name in the event name 
+### Should we integrate the application name in the event name 
 
 In a world of *events* an event is fired, and some listeners will listen some events.
 So with events sent by "Application", if we have an Application `UserAdminApp` which will send the event 'USER_CREATED', and we have an other application (WelcomeEmail) (or service) wanted to send on email to new users ... 
@@ -212,7 +241,7 @@ If we consider **RabbitMQ** it means that the Exchange name will be `UserAdminAp
 
 Regarding this, I really think that the event should be `USER_CREATED` without any consideration of the application name, but as it is important to be able to know which application fires wich event, we may add the application name in the _metas information of the event's payload;
 
-### Others ...
+### Alternate Exchange notes
 
 * If the _"Alternate Exchange"_ was not created first it's not a problem, as it's configured, the only thing is that if one message is sent to the exchange 'My_EVENT', and the _"Alternate Exchange"_ does not exists (if no queues are bound to the exchange 'My_EVENT'), the message will be lost ! 
 
@@ -231,6 +260,8 @@ The Queue `CONSUMER::MY_EVENT_NAME` is configured with the _DEAD LETTER EXHANGE_
 
 :warning: In RabbitMQ only queue store messages, not exchangesso it's important that you initialize your rabbitMQ instance with the values of _alternateExchangeName_,  _alternateQueueName_,  _deadLetterExchangeName_, and  _deadLetterQueueName_
 
+### Requeue with delay
 
+It could be very intersting to _"negatively acknowledge"_ a message and ask to be requeue after a delay, but this will be (if can) in version 2 !
 
 

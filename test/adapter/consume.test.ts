@@ -304,6 +304,40 @@ describe("RabbitMQ Event Manager, consume Event", () => {
       });
   });
 
+  it(`Should ack message if listener resolves nothing (undefined)`, done => {
+    /** given */
+    const message = {
+      fields: {
+        deliveryTag: 1
+      },
+      content: {
+        toString() {
+          return JSON.stringify({
+            _metas: { guid: "guid" }
+          });
+        }
+      }
+    };
+    const channel = {
+      consume: sandbox.stub(),
+      ack: sandbox.stub()
+    };
+    channel.consume.callsArgWith(1, message);
+    const listener = async () => undefined;
+    const options = { maxNumberOfMessagesRetries: 10 };
+    /** when */
+    adapter
+      .consume(channel as any, "QUEUE", listener, options as any)
+      .then(() => {
+        /** then */
+        expect(channel.ack.called).to.equal(true);
+        done();
+      })
+      .catch((err: any) => {
+        done(err);
+      });
+  });
+
   it(`Should nack message and REQUEUE if listener resolves false`, done => {
     /** given */
     const message = {

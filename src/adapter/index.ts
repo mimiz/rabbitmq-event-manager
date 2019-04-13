@@ -154,7 +154,7 @@ export function consume(
               if (listenerInstance instanceof Promise) {
                 listenerInstance
                   .then(ok => {
-                    if (ok) {
+                    if (ok || ok === undefined) {
                       channel.ack(message);
                       resolve(ok);
                     } else {

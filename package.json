@@ -1,8 +1,20 @@
 {
-  "name": "event-manager",
+  "name": "rabbitmq-event-manager",
+  "author": {
+    "email": "rgoyard@gmail.com",
+    "name": "Rémi Goyard",
+    "url": "https://www.mimiz.fr"
+  },
   "version": "1.0.0",
   "main": "build/index.js",
   "license": "MIT",
+  "keywords": [
+    "Event",
+    "amqp",
+    "RabbitMQ",
+    "event-manager",
+    "event emitter"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "cross-env NODE_ENV=test mocha --recursive \"./test/**/*.test.ts\"",
