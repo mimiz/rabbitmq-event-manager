@@ -11,4 +11,4 @@ tslint.json
 src/
 
 // npm pack
-{rabbitmq-event-manager}-*.tgz
+*.tgz
