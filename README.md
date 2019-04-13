@@ -86,7 +86,7 @@ So if your payload is :
 
 With Metas data it will be : 
 
-```json
+```js
 {
     _metas:{
         guid: '465e008c-d37f-4e31-b494-023e6d187946',

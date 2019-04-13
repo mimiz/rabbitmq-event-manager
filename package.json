@@ -1,9 +1,14 @@
 {
   "name": "rabbitmq-event-manager",
+  "description": "A nodeJS Event Manager to emit, and listen event through RabbitMQ",
   "author": {
     "email": "rgoyard@gmail.com",
     "name": "Rémi Goyard",
     "url": "https://www.mimiz.fr"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mimiz/rabbitmq-event-manager.git"
   },
   "version": "1.0.2",
   "main": "build/index.js",
