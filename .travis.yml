@@ -13,10 +13,12 @@ deploy:
     api_key:
       secure: RI9aHp5+8e8FmRh33c3vgkFz/hgVXiruGRxvAdfIJi+bL1N4V7YJx7DvwiujBFDucKJYiAMxu2Qwdq2cXqHOsRY2Btu4y6G7oKFzWZlCvxdv5K3KYhNoy5baikD9xFPkto9t8b2J41xJCFyFT4ZElo6lqOjis8cNFW79anhro87gbKzex3ndjuRnAeCn2AuQJLrSAEs0SO7B+DrxKjBPENmd6KWFW+17wx66AjNpwGfNn4bSoR3oqVxQVAz26DlqrxgXz3+yz7Rgurl3TcU5QTw7o676OP1cbvuil0QEFbLGyEzb0hSTKrxZ4JSiK76CIFHJSnqEtclf/Hv++fjWisN3/i9Pxlu3b96spd3QVwRBPyt2FOLomWKSnkuyuoc/5cDoWMFubXuxlWM/hsa+RBG+nNCywYsB83u8duFsowevzNqZlnttyxsi+FhCE9zHSS+geg1ViCMEfIqsl4Al+JUIpmQEQebpNd7gcTIoKd/lrVyLqUmLcIYAU9uOSk9wJQOagkqK+BklnhDysfCJq87bmLfQ0jLbfPcrw8PyNQ22JPFeh0vMy/sp6fsQWnKatBTpkHbYrFl94HyI+5KaMkd8JXXh/JWUS2mtPGSaEjLZJ3J1xx02rPljIfnLpgAWCqOafhqb3lTK7DpC75cMQ0IsXEHlkRogcf5/UJVykHk=
     file: rabbitmq-event-manager-*.tgz
+    skip_cleanup: true
     on:
       tags: true
   - provider: npm
     email: rgoyard@gmail.com
+    skip_cleanup: true
     api_key:
       secure: ZikU+qlmkfxYOUjLDJmyCtpS/XpVcFr3Ji5+V9V/2bDrY4XXVelfHPAbPdYScd1ABf6Xp/rM/V4MOj68WJA7xxQlVfXJFEi57n/scO2KC3NCGuVPs1XKK/BAvKyZXkzzBMte3/G++5A9Lml1ofZtYXiEBGfi64ILbZ9aYUmJ/H0kCcVTy1OL3QPvSzgD0W3wK6cgitCSN4EFZ0fPACYvv+agtpOzYH1Gysxpbs3fF/CdShgohsWbY2rR+SFlW+VMgmoTtnCAoZofP8VsnKqrU2OCAkJMPIFn5Bp5Nhsmkva0sUI3jw/tQ5xAYpqFnBHx1I7rLF6OFLd2rOb3IPzkHeX+wr/X/OnlXLUTZ7EoAmg31/vhiJaVxoS7EDAyJ9moVyvgbEf6QyDmGcEiXGnko1p/dT+Dph5k2HbDW7ZBBABnM6JuixYgA03hxLMzbK6na/nYuHCNUAP87upGcoU8kuc/pAs3kBK8K4Y0kY7vk/QkswFu7lOAf/M7uZI+MfinIeUGusT/X2TDnvMzRHvYgk+dt1qzSwvzUIKCT/t/DG5uh/TOHYwwYYdTQJF0Sizob3dndksjYQOjldEId96QIDlpJCq7FsrlXNDoUK309iW7nA1hN2G9UkN/OU2ONRx65AFmmxlQdOGx3dJnKqAJ8Qx36KP/690i7zllHEYnfLY=
     on:
