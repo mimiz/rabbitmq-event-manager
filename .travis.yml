@@ -1,0 +1,26 @@
+language: nodejs
+
+before_script:
+  - yarn setup
+  - yarn build
+
+script:
+  - yarn coverage
+
+after_success:
+  - npm pack
+
+deploy:
+  - provider: releases
+    api_key: 711797b5d026fdeda55b7c7d9c31ea2bf469d735
+    file_glob: true
+    file: "rabbitmq-event-manager-*.tgz"
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: npm
+    skip_cleanup: true
+    email: "rgoyard@gmail.com"
+    api_key: 8f22e116-36e2-4d35-822b-c7d749125bd
+    on:
+      tags: true

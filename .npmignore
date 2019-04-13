@@ -1,0 +1,14 @@
+tsconfig.json
+.travis.yml
+.nojekyll
+docs/
+coverage/
+test/
+.npmignore
+todo
+prettierrc.config.js
+tslint.json
+src/
+
+// npm pack
+{rabbitmq-event-manager}-*.tgz
