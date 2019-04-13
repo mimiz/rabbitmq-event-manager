@@ -1,13 +1,20 @@
 language: node_js
 node_js:
 - stable
+addons:
+  code_climate:
+    repo_token:
+      secure: OFDTo9IAUoN43jxZGTLoekD3Zi7bufmxE4fhPbxqgMNLCRx4RT1nLRrGOZH+wcu669KaIIxi6rV6E68T6acCovEn2/oKSsaQu+0qGtg7aulb0fK/kSEMOMDnAuDnnEOS9S+MiBQulKTHixomtx/FKSZjAJQXYsQiWHh+Q2tYbwyVuX9Sd2cppyItUuDqH2yp6xdPDrZi5Yqh1wZIrwKaKtEsGomOgp4n1LR8vVzS3dhzBVK2c+F6KlUa2qjXFBmy2paS6rsvT26vc0q1AYXtlP/Vy6T2AvU7BqRQS/dbUMDQL07C/8liSCZvj4X7v6JjtVcv2SvtCEUAzlGLYlUDamwrBhna9Bn34ARgcNXH+5Wph4XqgDjiP7C3Z/qghdumRXoIu27Ary/yyGLFBR/UQUJfsY7BVz5M9fd4iay9FjZk5qE7hswsttH0fHh67QzljUMUZ3OmLeFnHKm6h/VTdU/jzFUubqefPviB4Dx+mWx6gwawgpXialuJD38eQIco/Gab7r/wEDkG0mjUxCwLAImrsQ6Oglbm0mn4nU4vU45TkttML0k7eSPjY+ncuA5ho8+mgI6B7WQ7sy1uE2EljszWOpTezroG/x29c5rzRHwORTNA43YY+lyk4y81ZXo55Rg5dto8BLaH9qK1gKsb/ekZ5xLV21t8SkcgM8ypZtQ=
 before_script:
 - yarn setup
 - yarn build
+- yarn global add codeclimate-test-reporter
 script:
 - yarn coverage
 after_success:
 - npm pack
+after_script:
+  - codeclimate-test-reporter < ./coverage/lcov.info
 deploy:
   - provider: releases
     api_key:
