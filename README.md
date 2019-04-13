@@ -6,7 +6,7 @@ Exchanges and Queues are automatically created.
 
 Here is a little schema : 
 
-![RabbitMQ Schema](./doc/RABBITMQ-Schema.png)
+![RabbitMQ Schema](https://raw.githubusercontent.com/mimiz/rabbitmq-event-manager/master/doc/RABBITMQ-Schema.png)
 
 ## Basic Example
 
