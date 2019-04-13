@@ -1,26 +1,19 @@
-language: nodejs
-
+language: node_js
+node_js:
+- stable
+- '6'
+- '4'
 before_script:
-  - yarn setup
-  - yarn build
-
+- yarn setup
+- yarn build
 script:
-  - yarn coverage
-
+- yarn coverage
 after_success:
-  - npm pack
-
+- npm pack
 deploy:
-  - provider: releases
-    api_key: 711797b5d026fdeda55b7c7d9c31ea2bf469d735
-    file_glob: true
-    file: "rabbitmq-event-manager-*.tgz"
-    skip_cleanup: true
-    on:
-      tags: true
-  - provider: npm
-    skip_cleanup: true
-    email: "rgoyard@gmail.com"
-    api_key: 8f22e116-36e2-4d35-822b-c7d749125bd
-    on:
-      tags: true
+  provider: releases
+  api_key:
+    secure: RI9aHp5+8e8FmRh33c3vgkFz/hgVXiruGRxvAdfIJi+bL1N4V7YJx7DvwiujBFDucKJYiAMxu2Qwdq2cXqHOsRY2Btu4y6G7oKFzWZlCvxdv5K3KYhNoy5baikD9xFPkto9t8b2J41xJCFyFT4ZElo6lqOjis8cNFW79anhro87gbKzex3ndjuRnAeCn2AuQJLrSAEs0SO7B+DrxKjBPENmd6KWFW+17wx66AjNpwGfNn4bSoR3oqVxQVAz26DlqrxgXz3+yz7Rgurl3TcU5QTw7o676OP1cbvuil0QEFbLGyEzb0hSTKrxZ4JSiK76CIFHJSnqEtclf/Hv++fjWisN3/i9Pxlu3b96spd3QVwRBPyt2FOLomWKSnkuyuoc/5cDoWMFubXuxlWM/hsa+RBG+nNCywYsB83u8duFsowevzNqZlnttyxsi+FhCE9zHSS+geg1ViCMEfIqsl4Al+JUIpmQEQebpNd7gcTIoKd/lrVyLqUmLcIYAU9uOSk9wJQOagkqK+BklnhDysfCJq87bmLfQ0jLbfPcrw8PyNQ22JPFeh0vMy/sp6fsQWnKatBTpkHbYrFl94HyI+5KaMkd8JXXh/JWUS2mtPGSaEjLZJ3J1xx02rPljIfnLpgAWCqOafhqb3lTK7DpC75cMQ0IsXEHlkRogcf5/UJVykHk=
+  file: rabbitmq-event-manager-*.tgz
+  on:
+    repo: mimiz/rabbitmq-event-manager

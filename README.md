@@ -78,7 +78,7 @@ By defaut, some metas data are added to the payload :
 
 So if your payload is : 
 
-```json
+```js
 {
     userId:42
 }
