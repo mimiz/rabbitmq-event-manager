@@ -1,5 +1,7 @@
 # RabbitMQ Event Manager
 
+[![Build Status](https://travis-ci.org/mimiz/rabbitmq-event-manager.svg?branch=master)](https://travis-ci.org/mimiz/rabbitmq-event-manager) [![Maintainability](https://api.codeclimate.com/v1/badges/bfd3cd4f2f47356c09f6/maintainability)](https://codeclimate.com/github/mimiz/rabbitmq-event-manager/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/bfd3cd4f2f47356c09f6/test_coverage)](https://codeclimate.com/github/mimiz/rabbitmq-event-manager/test_coverage) 
+
 A Node Event Manager using RabbitMQ to exchange events.
 
 Exchanges and Queues are automatically created.
@@ -8,17 +10,31 @@ Here is a little schema :
 
 ![RabbitMQ Schema](https://raw.githubusercontent.com/mimiz/rabbitmq-event-manager/master/doc/RABBITMQ-Schema.png)
 
+## Install 
+
+```
+npm install rabbitmq-event-manager
+```
+
+Or with Yarn 
+
+```
+yarn add rabbitmq-event-manager
+```
+
+
 ## Basic Example
 
 * **Consumer**
 ```js
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     console.log(payload);
     return true;
 });
 ```
+
 The `return` statement at the end of the handler function, will tell RabbitMQ to _"acknowledge"_ the message.
 
 You can _"negatively acknowledge"_ and **Requeue** the message by returning `false` (rejecting the Promise).
@@ -27,7 +43,7 @@ If you don't want to **requeue** the message you can simply throw an exception .
 
 * **Producer**
 ```js
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost', appName:'PRODUCER_1'});
 
 myEventManager.emit('MY_EVENT_NAME', payload);
@@ -43,7 +59,7 @@ This will create the following elements in RabbitMQ :
 If a new Consumer is created and listen the same event : 
 
 ```js
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     console.log(payload);
@@ -105,7 +121,7 @@ You can also override the metas generation by giving a function as *metas* optio
 ### With no metas
 
 ```js
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManagerWithNoMetas = new EventManager({
     url: 'amqp://localhost', 
     appName: 'PRODUCER_1',
@@ -121,7 +137,7 @@ myEventManagerWithNoMetas.emit('MY_EVENT_NAME', payload);
 
 ### Override Metas
 ```js
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManagerOverrideMetas = new EventManager({
     url: 'amqp://localhost', 
     appName: 'PRODUCER_1',
@@ -181,7 +197,7 @@ If you don't want to **requeue** the message you can simply throw an exception .
 ### Acknowledge the message (remove from queue)
 
 ```js
-const {EventManager} = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     return true; // the message will be acknoledge
@@ -196,7 +212,7 @@ After the message is acknowledged, it will be removed from the queue and deleted
 ### Negatively Acknowledge and Requeue the message
 
 ```js
-const {EventManager} = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     return false; // the message will be acknoledge
@@ -208,7 +224,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 
 
 ```js
-const {EventManager} = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'OTHER_CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     throw new Error('This will flush the message to DEAD LETTER QUEUE')
@@ -247,7 +263,7 @@ Regarding this, I really think that the event should be `USER_CREATED` without a
 
 * When we listen to an event :
 ```ts
-const EventManager = require('rabbitmq-event-manager');
+import EventManager from 'rabbitmq-event-manager';
 const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'CONSUMER');
 myEventManager.on('MY_EVENT_NAME', async (payload)=>{
     console.log(payload);
