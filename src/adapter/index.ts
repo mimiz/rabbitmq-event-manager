@@ -23,10 +23,7 @@ export async function connect(url: string): Promise<amqp.Connection> {
     return connection;
   } catch (e) {
     LOGGER.error("Unable to connect to RabbitMq Server", e);
-    throw new EventManagerError(
-      "[RABBITMQ] - Unable to connect to RabbitMq Server",
-      e
-    );
+    throw new EventManagerError("Unable to connect to RabbitMq Server", e);
   }
 }
 

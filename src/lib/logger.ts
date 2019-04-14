@@ -2,22 +2,15 @@ import * as logform from "logform";
 import { Writable } from "stream";
 import * as tripleBeam from "triple-beam";
 import * as winston from "winston";
+import { EventManagerError } from "./EventManagerError";
 
 const { format } = winston;
-const {
-  combine,
-  printf,
-  metadata,
-  timestamp,
-  label,
-  colorize,
-  prettyPrint
-} = format;
+const { combine, printf, metadata, timestamp, label, colorize } = format;
 
 export interface ICreateLoggerOptions {
-  prefix: string;
-  level: string;
-  transportMode: "mute" | "console" | string;
+  prefix?: string;
+  level?: string;
+  transportMode?: "mute" | "console";
 }
 
 /**
@@ -95,10 +88,10 @@ function createFormat(prefix: string) {
   );
 }
 export function createLogger({
-  prefix,
+  prefix = "[RABBITMQ]",
   level = "error",
   transportMode = "console"
-}: ICreateLoggerOptions): winston.Logger {
+}: ICreateLoggerOptions): void {
   const transports: any[] = []; // winston interface are not that useful
   if (transportMode === "mute") {
     transports.push(
@@ -125,17 +118,18 @@ export function createLogger({
     format: winston.format.json(),
     transports
   });
-  return logger;
+  setLogger(logger);
 }
-
-export const LOGGER = createLogger({
-  prefix: process.env.RABBITMQ_EVENT_MANAGER_PREFIX
-    ? process.env.RABBITMQ_EVENT_MANAGER_PREFIX
-    : "RABBITMQ_EVENT_MANAGER",
-  level: process.env.RABBITMQ_EVENT_MANAGER_LOG_LEVEL
-    ? process.env.RABBITMQ_EVENT_MANAGER_LOG_LEVEL
-    : "error",
-  transportMode: process.env.RABBITMQ_EVENT_MANAGER_TRANSPORT_MODE
-    ? process.env.RABBITMQ_EVENT_MANAGER_TRANSPORT_MODE
-    : "console"
+let currentLogger: winston.Logger | null = null;
+export function setLogger(logger: winston.Logger) {
+  currentLogger = logger;
+}
+export const LOGGER = new Proxy(({} as any) as winston.Logger, {
+  get: (_, prop) => {
+    if (currentLogger === null) {
+      throw new EventManagerError("Logger has not been inititialized");
+    } else {
+      return Reflect.get(currentLogger, prop);
+    }
+  }
 });

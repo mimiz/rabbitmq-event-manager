@@ -26,4 +26,6 @@ export interface IEventManagerOptions {
   ttl: number;
   maxNumberOfMessagesRetries: number;
   logLevel: "error" | "debug" | "info" | "warn";
+  logPrefix: string;
+  logTransportMode: "console" | "mute";
 }

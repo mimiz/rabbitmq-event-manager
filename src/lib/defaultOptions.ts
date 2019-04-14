@@ -10,5 +10,7 @@ export const defaultOptions: IEventManagerOptions = {
   deadLetterQueueName: "DEAD_LETTER_QUEUE",
   ttl: 1000 * 60 * 60 * 24, // 24 hours,
   maxNumberOfMessagesRetries: 10,
-  logLevel: "error"
+  logLevel: "error",
+  logPrefix: "RABBITMQ_EVENT_MANAGER",
+  logTransportMode: "console"
 };

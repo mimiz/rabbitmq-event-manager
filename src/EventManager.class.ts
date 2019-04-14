@@ -8,15 +8,23 @@ import {
   IEventPayload,
   OverrideMetasFunction
 } from "./lib/interfaces";
-import { LOGGER } from "./lib/logger";
+import { LOGGER, createLogger } from "./lib/logger";
 
 export class EventManager {
   private options: IEventManagerOptions;
 
   constructor(options?: Partial<IEventManagerOptions>) {
     this.options = { ...defaultOptions, ...options };
+    this.createLogger();
   }
 
+  private createLogger() {
+    createLogger({
+      prefix: this.options.logPrefix,
+      level: this.options.logLevel,
+      transportMode: this.options.logTransportMode
+    });
+  }
   public async on(eventName: string, listener: EventHandlerFunction) {
     try {
       const channel = await adapter.createChannel(this.options.url);

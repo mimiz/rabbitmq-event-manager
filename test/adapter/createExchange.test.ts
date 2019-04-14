@@ -1,14 +1,14 @@
-import * as amqp from "amqplib";
 import { expect } from "chai";
 import { describe, it } from "mocha";
 import * as sinon from "sinon";
 import * as adapter from "../../src/adapter";
-import { EventManagerError } from "../../src/lib/EventManagerError";
+import { createLogger } from "../../src/lib/logger";
 describe("RabbitMQ Event Manager > Adapter > createExchange", () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(async () => {
     await adapter.disconnect();
     sandbox = sinon.createSandbox();
+    createLogger({ transportMode: "mute" });
   });
   afterEach(async () => {
     sandbox.restore();

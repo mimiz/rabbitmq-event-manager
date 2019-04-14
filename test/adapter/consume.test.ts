@@ -2,11 +2,13 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 import * as sinon from "sinon";
 import * as adapter from "../../src/adapter";
+import { createLogger } from "../../src/lib/logger";
 
 describe("RabbitMQ Event Manager, consume Event", () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    createLogger({ transportMode: "mute" });
   });
   afterEach(() => {
     sandbox.restore();

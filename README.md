@@ -82,6 +82,9 @@ deadLetterExchangeName | String | `NO_QUEUE_EXCHANGE` |  The name of the alterna
 deadLetterQueueName | String | `QUEUE_NO_QUEUE` | The name of the alternate exchange queue you would like to use, (:warning: remember this must be the same value for producer and consumers)
 ttl | Number | `86400000` (24h) | The default TTL before flushing event to the Dead Letter Echange
 maxNumberOfMessagesRetries | Numbner | `100` | The number of tries the consumer will treat one specific message, before flushing it to the dead letter exhange.
+logPrefix | string | [RABBITMQ] | The text that will be printed before the error log
+logLevel | string | error | The log Level [(see winston logLevels)](https://github.com/winstonjs/winston#logging-levels) 
+logTransportMode | string | console | Mute (no log), or output to console. Possible values are (_"console"_ or _"mute"_)
 
 ## Metas Informations
 
