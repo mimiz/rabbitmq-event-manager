@@ -146,7 +146,7 @@ export function consume(
               const max = options.maxNumberOfMessagesRetries;
               reject(
                 new EventManagerError(
-                  `[RABBITMQ] - Event with ${id} has been retried more than ${max} times`
+                  `Event with ${id} has been retried more than ${max} times`
                 )
               );
             } else {
@@ -161,19 +161,14 @@ export function consume(
                       channel.nack(message);
                       reject(
                         new EventManagerError(
-                          "[RABBITMQ] - Listener of event returned not true, so requeue message."
+                          "Listener of event returned not true, so requeue message."
                         )
                       );
                     }
                   })
                   .catch(err => {
                     channel.nack(message, false, false);
-                    reject(
-                      new EventManagerError(
-                        "[RABBITMQ] - Listener throws Error",
-                        err
-                      )
-                    );
+                    reject(new EventManagerError("Listener throws Error", err));
                   });
               } else {
                 // the listener does not return a promise so we need to acknowledge the message by default
@@ -183,20 +178,16 @@ export function consume(
             }
           } catch (e) {
             channel.nack(message, false, false);
-            reject(
-              new EventManagerError(`[RABBITMQ] - Error Parsing message`, e)
-            );
+            reject(new EventManagerError(`Error Parsing message`, e));
           }
         } else {
           reject(
-            new EventManagerError(
-              `[RABBITMQ] - Message received is null or not defined`
-            )
+            new EventManagerError(`Message received is null or not defined`)
           );
         }
       });
     } catch (e) {
-      reject(new EventManagerError(`[RABBITMQ] - Error Consuming queue.`, e));
+      reject(new EventManagerError(`Error Consuming queue.`, e));
     }
   });
 }
