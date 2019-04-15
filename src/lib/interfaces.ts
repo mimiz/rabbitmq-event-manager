@@ -11,7 +11,7 @@ export interface IEventPayload {
 }
 export type EventHandlerFunction = (
   payload: IEventPayload
-) => void | Promise<boolean | undefined>;
+) => void | Promise<boolean | void | undefined>;
 export type OverrideMetasFunction = (
   metas: IEventPayloadMetas
 ) => IEventPayloadMetas;
