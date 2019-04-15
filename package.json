@@ -34,7 +34,9 @@
     "lint:format:fix": "yarn run lint:format --write",
     "lint:quality:fix": "yarn run lint:quality --fix",
     "precommit:format": "prettier --check \"./{src,test}/**/*.ts\"",
-    "precommit:quality": "tslint src/**/*.ts test/**/*.ts"
+    "precommit:quality": "tslint src/**/*.ts test/**/*.ts",
+    "demo:cloudamqp": "ts-node demo/cloudamqp/run.ts",
+    "demo:docker": "ts-node demo/docker/run.ts"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.11",

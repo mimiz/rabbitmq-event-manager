@@ -27,6 +27,7 @@ export class EventManager {
   }
   public async on(eventName: string, listener: EventHandlerFunction) {
     try {
+      LOGGER.debug(`Listening ${eventName} Event ...`);
       const channel = await adapter.createChannel(this.options.url);
       const queueName = `${this.options.application}::${eventName}`;
       const exchangeName = await adapter.createExchange(
@@ -50,6 +51,7 @@ export class EventManager {
   }
   public async emit(eventName: string, payload: IEventPayload): Promise<void> {
     try {
+      LOGGER.debug(`Emitting ${eventName} Message ...`);
       // we should create the metas information here
       payload = this.addMetasToPayload(payload, eventName);
       const channel = await adapter.createChannel(this.options.url);
@@ -59,6 +61,7 @@ export class EventManager {
         this.options.alternateExchangeName
       );
       await adapter.publish(channel, eventName, payload, this.options);
+      LOGGER.debug(`Message ${eventName} Emitted`);
       return;
     } catch (err) {
       throw new EventManagerError(`Unable to emit event ${eventName}`, err);
@@ -67,6 +70,7 @@ export class EventManager {
 
   public async initialize() {
     try {
+      LOGGER.debug(`Initializing EventManager`, { ...this.options });
       const channel = await adapter.createChannel(this.options.url);
       // Create Alternate
       await adapter.createExchange(channel, this.options.alternateExchangeName);
@@ -90,6 +94,7 @@ export class EventManager {
     }
   }
   public async close() {
+    LOGGER.debug(`Disconnect EventManager`, { ...this.options });
     return adapter.disconnect();
   }
 

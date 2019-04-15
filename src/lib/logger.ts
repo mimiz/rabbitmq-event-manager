@@ -5,7 +5,15 @@ import * as winston from "winston";
 import { EventManagerError } from "./EventManagerError";
 
 const { format } = winston;
-const { combine, printf, metadata, timestamp, label, colorize } = format;
+const {
+  combine,
+  printf,
+  metadata,
+  timestamp,
+  label,
+  colorize,
+  prettyPrint
+} = format;
 
 export interface ICreateLoggerOptions {
   prefix?: string;
@@ -57,13 +65,10 @@ const myFormat = printf(info => {
     if (filtered.length > 0) {
       meta = filtered.reduce((str, [k, v], index) => {
         if (!(info.error && k === "stack")) {
-          str += `\t - ${k} : ${JSON.stringify(v)}\n`;
-        }
-        if (index === 0 && str !== "") {
-          str = `\nContext : \n${str}`;
+          str += `${k}:${JSON.stringify(v)}, `;
         }
         return str;
-      }, "");
+      }, "\n");
     }
   }
 
@@ -87,49 +92,51 @@ function createFormat(prefix: string) {
     myFormat
   );
 }
+interface ILogger extends winston.Logger {
+  [k: string]: any;
+}
+let currentLogger: ILogger | null = null;
 export function createLogger({
   prefix = "[RABBITMQ]",
   level = "error",
   transportMode = "console"
 }: ICreateLoggerOptions): void {
-  const transports: any[] = []; // winston interface are not that useful
-  if (transportMode === "mute") {
-    transports.push(
-      new winston.transports.Stream({
-        stream: new Writable({
-          write: () => {
-            /* do nothing */
-          }
+  if (currentLogger === null) {
+    const transports: any[] = []; // winston interface are not that useful
+    if (transportMode === "mute") {
+      transports.push(
+        new winston.transports.Stream({
+          stream: new Writable({
+            write: () => {
+              /* do nothing */
+            }
+          })
         })
-      })
-    );
-  } else {
-    // transports === 'console'
-    transports.push(
-      new winston.transports.Console({
-        level,
-        format: createFormat(prefix)
-      })
-    );
-  }
+      );
+    } else {
+      // transports === 'console'
+      transports.push(
+        new winston.transports.Console({
+          level,
+          format: createFormat(prefix)
+        })
+      );
+    }
 
-  const logger = winston.createLogger({
-    level,
-    format: winston.format.json(),
-    transports
-  });
-  setLogger(logger);
+    currentLogger = winston.createLogger({
+      level,
+      format: winston.format.json(),
+      transports
+    });
+  }
 }
-let currentLogger: winston.Logger | null = null;
-export function setLogger(logger: winston.Logger) {
-  currentLogger = logger;
-}
-export const LOGGER = new Proxy(({} as any) as winston.Logger, {
+
+export const LOGGER = new Proxy(({} as any) as ILogger, {
   get: (_, prop) => {
     if (currentLogger === null) {
       throw new EventManagerError("Logger has not been inititialized");
     } else {
-      return Reflect.get(currentLogger, prop);
+      return currentLogger[prop.toString()];
     }
   }
 });

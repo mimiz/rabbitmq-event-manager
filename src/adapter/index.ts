@@ -17,6 +17,7 @@ let channel: amqp.ConfirmChannel | null = null;
  */
 export async function connect(url: string): Promise<amqp.Connection> {
   try {
+    LOGGER.debug(`Connect to RabbitMQ server on ${url}`);
     if (connection === null) {
       connection = await amqp.connect(url);
     }
@@ -42,10 +43,12 @@ export async function disconnect(): Promise<void> {
 }
 export async function createChannel(url: string): Promise<amqp.ConfirmChannel> {
   try {
+    LOGGER.debug(`Create Channel on ${url}`);
     if (channel === null) {
       const connection = await amqp.connect(url);
       channel = await connection.createConfirmChannel();
     }
+    LOGGER.info(`Channel Created on ${url}`);
     return channel;
   } catch (e) {
     LOGGER.error("Unable to create a channel on to RabbitMq Server", e);
@@ -62,6 +65,7 @@ export async function createExchange(
   alternateExchangeName: string | null = null,
   options = { durable: true, autoDelete: false }
 ): Promise<string> {
+  LOGGER.debug(`Create Exchange ${name}`);
   const exOptions: amqp.Options.AssertExchange = {
     durable: true,
     autoDelete: false,
@@ -72,6 +76,7 @@ export async function createExchange(
   }
 
   await channel.assertExchange(name, "fanout", exOptions);
+  LOGGER.info(`Echange ${name} created`);
   return name;
 }
 
@@ -81,6 +86,7 @@ export function publish(
   payload: IEventPayload,
   options: IEventManagerOptions
 ): Promise<boolean> {
+  LOGGER.debug(`Publish message to exchange ${exchangeName}`);
   return new Promise((resolve, reject) => {
     const stringPayload = JSON.stringify(payload);
     channel.publish(
@@ -98,6 +104,8 @@ export function publish(
           LOGGER.error("Unable to publish", err);
           reject(err);
         } else {
+          LOGGER.info(`Message published to exchange ${exchangeName}`);
+          LOGGER.debug("Message payload", payload);
           resolve(true);
         }
       }
@@ -111,6 +119,7 @@ export async function createQueue(
   exchangeName: string,
   options?: amqp.Options.AssertQueue
 ): Promise<string> {
+  LOGGER.debug(`Create Queue ${queueName} binded to ${exchangeName}`);
   const qOptions: any = {
     durable: true,
     autoDelete: false,
@@ -120,6 +129,7 @@ export async function createQueue(
   await channel.assertQueue(queueName, qOptions);
   await channel.bindQueue(queueName, exchangeName, "");
   await channel.prefetch(1);
+  LOGGER.debug(`Queue ${queueName} binded to ${exchangeName} Created`);
   return queueName;
 }
 
@@ -129,9 +139,11 @@ export function consume(
   listener: EventHandlerFunction,
   options: IEventManagerOptions
 ): Promise<boolean> {
+  LOGGER.debug(`Consume messages of queue  ${queueName}`);
   return new Promise((resolve, reject) => {
     try {
       channel.consume(queueName, message => {
+        LOGGER.debug(`Message received on queue  ${queueName}`);
         if (message) {
           try {
             const payload = JSON.parse(message.content.toString());
@@ -141,6 +153,11 @@ export function consume(
               channel.nack(message, false, false);
               const id = payload._metas.guid;
               const max = options.maxNumberOfMessagesRetries;
+              LOGGER.warn(
+                `Message has been flushed, after ${
+                  options.maxNumberOfMessagesRetries
+                } times requeued.`
+              );
               reject(
                 new EventManagerError(
                   `Event with ${id} has been retried more than ${max} times`
@@ -151,10 +168,14 @@ export function consume(
               if (listenerInstance instanceof Promise) {
                 listenerInstance
                   .then(ok => {
-                    if (ok || ok === undefined) {
+                    if (ok || typeof ok === "undefined") {
+                      LOGGER.debug("Message has been ackowledged");
                       channel.ack(message);
                       resolve(ok || ok === undefined);
                     } else {
+                      LOGGER.debug(
+                        `Message has not been ackowledged and has be requeued`
+                      );
                       channel.nack(message);
                       reject(
                         new EventManagerError(
@@ -164,16 +185,26 @@ export function consume(
                     }
                   })
                   .catch(err => {
+                    LOGGER.debug(
+                      `Message has not been ackowledged and has be flushed`
+                    );
                     channel.nack(message, false, false);
                     reject(new EventManagerError("Listener throws Error", err));
                   });
               } else {
+                LOGGER.warn(
+                  `Listener of queue ${queueName} is not a Promise, all messages will be acknowledged by default`,
+                  message
+                );
                 // the listener does not return a promise so we need to acknowledge the message by default
                 channel.ack(message);
                 resolve(true);
               }
             }
           } catch (e) {
+            LOGGER.debug(
+              `Message has been flushed cause unable to be JSON parsed on ${queueName}`
+            );
             channel.nack(message, false, false);
             reject(new EventManagerError(`Error Parsing message`, e));
           }

@@ -325,7 +325,9 @@ describe("RabbitMQ Event Manager, consume Event", () => {
       ack: sandbox.stub()
     };
     channel.consume.callsArgWith(1, message);
-    const listener = async () => undefined;
+    const listener = async () => {
+      /** return void */
+    };
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
