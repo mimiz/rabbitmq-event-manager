@@ -140,3 +140,7 @@ export const LOGGER = new Proxy(({} as any) as ILogger, {
     }
   }
 });
+
+export function setLogger(logger: ILogger | null) {
+  currentLogger = logger;
+}
