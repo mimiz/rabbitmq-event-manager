@@ -153,7 +153,7 @@ export function consume(
                   .then(ok => {
                     if (ok || ok === undefined) {
                       channel.ack(message);
-                      resolve(ok);
+                      resolve(ok || ok === undefined);
                     } else {
                       channel.nack(message);
                       reject(
