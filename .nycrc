@@ -3,7 +3,8 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "**/node_modules/**"
+    "**/node_modules/**",
+    "src/lib/interfaces*"
   ],
   "extension": [
     ".ts"

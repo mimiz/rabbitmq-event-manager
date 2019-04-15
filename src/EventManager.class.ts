@@ -8,7 +8,7 @@ import {
   IEventPayload,
   OverrideMetasFunction
 } from "./lib/interfaces";
-import { LOGGER, createLogger } from "./lib/logger";
+import { createLogger, LOGGER } from "./lib/logger";
 
 export class EventManager {
   private options: IEventManagerOptions;
@@ -65,6 +65,30 @@ export class EventManager {
     }
   }
 
+  public async initialize() {
+    try {
+      const channel = await adapter.createChannel(this.options.url);
+      // Create Alternate
+      await adapter.createExchange(channel, this.options.alternateExchangeName);
+      await adapter.createQueue(
+        channel,
+        this.options.alternateQueueName,
+        this.options.alternateExchangeName
+      );
+      // Create Dead Letter
+      await adapter.createExchange(
+        channel,
+        this.options.deadLetterExchangeName
+      );
+      await adapter.createQueue(
+        channel,
+        this.options.deadLetterQueueName,
+        this.options.deadLetterExchangeName
+      );
+    } catch (err) {
+      throw new EventManagerError("Error Initializing Event Manager", err);
+    }
+  }
   public async close() {
     return adapter.disconnect();
   }

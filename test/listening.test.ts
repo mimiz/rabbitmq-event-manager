@@ -114,13 +114,4 @@ describe("RabbitMQ Event Manager, Listening events ", () => {
         done();
       });
   });
-
-  it.skip(`Should be able to "init" rabbitmq, creating exhange and queues`, async () => {
-    /** given */
-
-    /** when */
-
-    /** then */
-    expect(true).to.not.equal(false);
-  });
 });

@@ -22,8 +22,20 @@ Or with Yarn
 yarn add rabbitmq-event-manager
 ```
 
-
 ## Basic Example
+
+* **Initialize** 
+```js
+import EventManager from 'rabbitmq-event-manager';
+const myEventManager = new EventManager({url:'amqp://localhost'}, appName:'CONSUMER');
+myEventManager.initialize()
+    .then(()=>{
+        /** Do something after initialization */
+    })
+    .catch((err)=> {
+        /** An error occured while initialization */
+    });
+```
 
 * **Consumer**
 ```js
