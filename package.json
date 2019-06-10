@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/mimiz/rabbitmq-event-manager.git"
   },
-  "version": "1.0.9",
+  "version": "1.10.0",
   "main": "build/index.js",
   "types": "build/index.d.js",
   "license": "MIT",
