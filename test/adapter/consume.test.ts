@@ -92,47 +92,6 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     expect(true).to.not.equal(false);
   });
 
-  it(`Should nack message, tryied too many time`, done => {
-    /** given */
-    const message = {
-      fields: {
-        deliveryTag: 11
-      },
-      content: {
-        toString() {
-          return JSON.stringify({
-            _metas: { guid: "guid" }
-          });
-        }
-      }
-    };
-
-    const channel = {
-      consume: sandbox.stub(),
-      nack: sandbox.stub()
-    };
-    channel.consume.callsArgWith(1, message);
-    const listener = () => {
-      throw new Error("Should not be called");
-    };
-    const options = { maxNumberOfMessagesRetries: 10 };
-    /** when */
-    adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
-      .then(() => {
-        done(new Error("Should not be resolved"));
-      })
-      .catch(err => {
-        expect(err.message).to.contains("has been retried more than");
-        expect(channel.nack.calledOnceWith(message, false, false)).to.equal(
-          true
-        );
-        done();
-      });
-    /** then */
-    expect(true).to.not.equal(false);
-  });
-
   it(`Should nack message, if listener rejects,`, done => {
     /** given */
     const message = {
@@ -378,6 +337,45 @@ describe("RabbitMQ Event Manager, consume Event", () => {
           "Listener of event returned not true, so requeue message."
         );
         done();
+      });
+  });
+
+  it(`Should ack message, event if deliveryTag > 10 (ISSUE #7)`, done => {
+    // https://github.com/mimiz/rabbitmq-event-manager/issues/7
+    /** given */
+    const message = {
+      fields: {
+        deliveryTag: 11
+      },
+      content: {
+        toString() {
+          return JSON.stringify({
+            _metas: { guid: "guid" }
+          });
+        }
+      }
+    };
+
+    const channel = {
+      consume: sandbox.stub(),
+      nack: sandbox.stub(),
+      ack: sandbox.stub()
+    };
+    channel.consume.callsArgWith(1, message);
+    const listener = () => {
+      return Promise.resolve(true);
+    };
+    const options = { maxNumberOfMessagesRetries: 10 };
+    /** when */
+    adapter
+      .consume(channel as any, "QUEUE", listener, options as any)
+      .then(() => {
+        expect(channel.nack.called).to.equal(false);
+        expect(channel.ack.called).to.equal(true);
+        done();
+      })
+      .catch(err => {
+        done(err);
       });
   });
 });
