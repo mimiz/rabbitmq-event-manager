@@ -1,18 +1,18 @@
-import EventManager from "../../src/index";
+import EventManager from '../../src/index';
 const server = process.env.RABBITMQ_URL;
 
 const eventManagerProducer = new EventManager({
   url: server,
-  application: "Producer",
-  logLevel: "debug",
-  logPrefix: "PRODUCER"
+  application: 'Producer',
+  logLevel: 'debug',
+  logPrefix: 'PRODUCER',
 });
 
 const eventManagerConsumer = new EventManager({
   url: server,
-  application: "Consumer",
-  logLevel: "debug",
-  logPrefix: "CONSUMER"
+  application: 'Consumer',
+  logLevel: 'debug',
+  logPrefix: 'CONSUMER',
 });
 
 eventManagerProducer
@@ -51,27 +51,27 @@ function emitter() {
   const payload = {
     user: {
       id: 1,
-      first: "Remi"
-    }
+      first: 'Remi',
+    },
   };
-  eventManagerProducer.emit("PRODUCER.EVENT", { ...payload, action: "ACK" });
-  eventManagerProducer.emit("PRODUCER.EVENT", { ...payload, action: "FLUSH" });
-  eventManagerProducer.emit("PRODUCER.EVENT", {
+  eventManagerProducer.emit('PRODUCER.EVENT', { ...payload, action: 'ACK' });
+  eventManagerProducer.emit('PRODUCER.EVENT', { ...payload, action: 'FLUSH' });
+  eventManagerProducer.emit('PRODUCER.EVENT', {
     ...payload,
-    action: "REQUEUE"
+    action: 'REQUEUE',
   });
-  eventManagerProducer.emit("PRODUCER.NO_APP_BOUND", { ...payload });
+  eventManagerProducer.emit('PRODUCER.NO_APP_BOUND', { ...payload });
 }
 
 function consumer() {
-  eventManagerConsumer.on("PRODUCER.EVENT", async (payload: any) => {
-    console.log("message received", payload);
+  eventManagerConsumer.on('PRODUCER.EVENT', async (payload: any) => {
+    console.log('message received', payload);
     switch (payload.action) {
-      case "FLUSH":
-        throw new Error("Flush Message");
-      case "REQUEUE":
+      case 'FLUSH':
+        throw new Error('Flush Message');
+      case 'REQUEUE':
         return false;
-      case "ACK":
+      case 'ACK':
       default:
         return true;
     }
@@ -81,8 +81,8 @@ function consumer() {
 async function closeAll() {
   await eventManagerConsumer.close();
   await eventManagerProducer.close();
-  console.log("You should have 2 messages in the DEAD_LETTER_QUEUE");
-  console.log("You should have 1 messages in the QUEUE_NO_QUEUE");
+  console.log('You should have 2 messages in the DEAD_LETTER_QUEUE');
+  console.log('You should have 1 messages in the QUEUE_NO_QUEUE');
   process.exit(0);
 }
 setTimeout(async () => {

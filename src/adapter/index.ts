@@ -1,11 +1,7 @@
-import * as amqp from "amqplib";
-import { EventManagerError } from "../lib/EventManagerError";
-import {
-  EventHandlerFunction,
-  IEventManagerOptions,
-  IEventPayload
-} from "../lib/interfaces";
-import { LOGGER } from "../lib/logger";
+import * as amqp from 'amqplib';
+import { EventManagerError } from '../lib/EventManagerError';
+import { EventHandlerFunction, IEventManagerOptions, IEventPayload } from '../lib/interfaces';
+import { LOGGER } from '../lib/logger';
 
 let connection: amqp.Connection | null = null;
 let channel: amqp.ConfirmChannel | null = null;
@@ -23,8 +19,8 @@ export async function connect(url: string): Promise<amqp.Connection> {
     }
     return connection;
   } catch (e) {
-    LOGGER.error("Unable to connect to RabbitMq Server", e);
-    throw new EventManagerError("Unable to connect to RabbitMq Server", e);
+    LOGGER.error('Unable to connect to RabbitMq Server', e);
+    throw new EventManagerError('Unable to connect to RabbitMq Server', e);
   }
 }
 
@@ -51,11 +47,8 @@ export async function createChannel(url: string): Promise<amqp.ConfirmChannel> {
     LOGGER.info(`Channel Created on ${url}`);
     return channel;
   } catch (e) {
-    LOGGER.error("Unable to create a channel on to RabbitMq Server", e);
-    throw new EventManagerError(
-      "[RABBITMQ] - Unable to create a channel on to RabbitMq Server",
-      e
-    );
+    LOGGER.error('Unable to create a channel on to RabbitMq Server', e);
+    throw new EventManagerError('[RABBITMQ] - Unable to create a channel on to RabbitMq Server', e);
   }
 }
 
@@ -69,43 +62,38 @@ export async function createExchange(
   const exOptions: amqp.Options.AssertExchange = {
     durable: true,
     autoDelete: false,
-    ...options
+    ...options,
   };
   if (alternateExchangeName) {
     exOptions.alternateExchange = alternateExchangeName;
   }
 
-  await channel.assertExchange(name, "fanout", exOptions);
+  await channel.assertExchange(name, 'fanout', exOptions);
   LOGGER.info(`Echange ${name} created`);
   return name;
 }
 
-export function publish(
-  channel: amqp.ConfirmChannel,
-  exchangeName: string,
-  payload: IEventPayload,
-  options: IEventManagerOptions
-): Promise<boolean> {
+export function publish(channel: amqp.ConfirmChannel, exchangeName: string, payload: IEventPayload, options: IEventManagerOptions): Promise<boolean> {
   LOGGER.debug(`Publish message to exchange ${exchangeName}`);
   return new Promise((resolve, reject) => {
     const stringPayload = JSON.stringify(payload);
     channel.publish(
       exchangeName,
-      "",
+      '',
       new Buffer(stringPayload),
       {
         persistent: true,
         appId: options.application,
         timestamp: payload._metas ? payload._metas.timestamp : Date.now(),
-        messageId: payload._metas ? payload._metas.guid : ""
+        messageId: payload._metas ? payload._metas.guid : '',
       },
       err => {
         if (err) {
-          LOGGER.error("Unable to publish", err);
+          LOGGER.error('Unable to publish', err);
           reject(err);
         } else {
           LOGGER.info(`Message published to exchange ${exchangeName}`);
-          LOGGER.debug("Message payload", payload);
+          LOGGER.debug('Message payload', payload);
           resolve(true);
         }
       }
@@ -113,24 +101,19 @@ export function publish(
   });
 }
 
-export async function createQueue(
-  channel: amqp.ConfirmChannel,
-  queueName: string,
-  exchangeName: string,
-  options?: amqp.Options.AssertQueue
-): Promise<string> {
+export async function createQueue(channel: amqp.ConfirmChannel, queueName: string, exchangeName: string, options?: amqp.Options.AssertQueue): Promise<string> {
   LOGGER.debug(`Create Queue ${queueName} binded to ${exchangeName}`);
   const qOptions: any = {
     durable: true,
     autoDelete: false,
-    ...options
+    ...options,
   };
 
   await channel.assertQueue(queueName, qOptions);
-  await channel.bindQueue(queueName, exchangeName, "");
+  await channel.bindQueue(queueName, exchangeName, '');
   await channel.prefetch(1);
   LOGGER.debug(`Queue ${queueName} binded to ${exchangeName} Created`);
   return queueName;
 }
 
-export { consume } from "./helper/consume";
+export { consume } from './helper/consume';

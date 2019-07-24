@@ -9,12 +9,8 @@ export interface IEventPayload {
   [k: string]: any;
   _metas?: IEventPayloadMetas;
 }
-export type EventHandlerFunction = (
-  payload: IEventPayload
-) => void | Promise<boolean | void>;
-export type OverrideMetasFunction = (
-  metas: IEventPayloadMetas
-) => IEventPayloadMetas;
+export type EventHandlerFunction = (payload: IEventPayload) => void | Promise<boolean | void>;
+export type OverrideMetasFunction = (metas: IEventPayloadMetas) => IEventPayloadMetas;
 export interface IEventManagerOptions {
   url: string;
   application: string;
@@ -25,7 +21,7 @@ export interface IEventManagerOptions {
   deadLetterQueueName: string;
   ttl: number;
   maxNumberOfMessagesRetries: number;
-  logLevel: "error" | "debug" | "info" | "warn";
+  logLevel: 'error' | 'debug' | 'info' | 'warn';
   logPrefix: string;
-  logTransportMode: "console" | "mute";
+  logTransportMode: 'console' | 'mute';
 }

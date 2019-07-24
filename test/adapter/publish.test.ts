@@ -1,14 +1,14 @@
-import { expect } from "chai";
-import { describe, it } from "mocha";
-import * as sinon from "sinon";
-import * as adapter from "../../src/adapter";
-import { createLogger } from "../../src/lib/logger";
-describe("RabbitMQ Event Manager > Adapter > publish", () => {
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import * as sinon from 'sinon';
+import * as adapter from '../../src/adapter';
+import { createLogger } from '../../src/lib/logger';
+describe('RabbitMQ Event Manager > Adapter > publish', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(async () => {
     await adapter.disconnect();
     sandbox = sinon.createSandbox();
-    createLogger({ transportMode: "mute" });
+    createLogger({ transportMode: 'mute' });
   });
   afterEach(async () => {
     sandbox.restore();
@@ -16,52 +16,47 @@ describe("RabbitMQ Event Manager > Adapter > publish", () => {
 
   it(`Should be able to publish on rabbitMQ`, async () => {
     /** given */
-    const exName = "my-exchange";
+    const exName = 'my-exchange';
     const channel = {
-      publish: sandbox.stub().callsArgWith(4, null)
+      publish: sandbox.stub().callsArgWith(4, null),
     };
     const payload = {
       _metas: {
-        guid: "aaa-zzz-eee",
+        guid: 'aaa-zzz-eee',
         name: exName,
-        application: "my-producer-application",
-        timestamp: Date.now()
+        application: 'my-producer-application',
+        timestamp: Date.now(),
       },
-      id: 134
+      id: 134,
     };
     const options = {
-      application: "my-producer-application"
+      application: 'my-producer-application',
     };
 
     /** when */
-    const published = await adapter.publish(
-      channel as any,
-      exName,
-      payload,
-      options as any
-    );
+    const published = await adapter.publish(channel as any, exName, payload, options as any);
     /** then */
     expect(published).to.equal(true);
   });
 
   it(`Should return false, if publihed reject`, async () => {
     /** given */
-    const exName = "my-exchange";
-    const rootError = new Error("error");
+    const exName = 'my-exchange';
+    const rootError = new Error('error');
     const channel = {
-      publish: sandbox.stub().callsArgWith(4, rootError)
+      publish: sandbox.stub().callsArgWith(4, rootError),
     };
     const payload = {
       _metas: {
-        guid: "aaa-zzz-eee",
+        guid: 'aaa-zzz-eee',
         name: exName,
-        application: "my-producer-application",
-        timestamp: Date.now()
+        application: 'my-producer-application',
+        timestamp: Date.now(),
       },
-      id: 134
+      id: 134,
     };
     const options = {
-      application: "my-producer-application"
+      application: 'my-producer-application',
     };
 
     /** when */
@@ -75,22 +70,22 @@ describe("RabbitMQ Event Manager > Adapter > publish", () => {
 
   it(`Should publish on the exhange`, async () => {
     /** given */
-    const exName = "my-exchange";
+    const exName = 'my-exchange';
 
     const channel = {
-      publish: sandbox.stub().callsArgWith(4, null)
+      publish: sandbox.stub().callsArgWith(4, null),
     };
     const payload = {
       _metas: {
-        guid: "aaa-zzz-eee",
+        guid: 'aaa-zzz-eee',
         name: exName,
-        application: "my-producer-application",
-        timestamp: Date.now()
+        application: 'my-producer-application',
+        timestamp: Date.now(),
       },
-      id: 134
+      id: 134,
     };
     const options = {
-      application: "my-producer-application"
+      application: 'my-producer-application',
     };
 
     /** when */

@@ -1,24 +1,16 @@
-import * as logform from "logform";
-import { Writable } from "stream";
-import * as tripleBeam from "triple-beam";
-import * as winston from "winston";
-import { EventManagerError } from "./EventManagerError";
+import * as logform from 'logform';
+import { Writable } from 'stream';
+import * as tripleBeam from 'triple-beam';
+import * as winston from 'winston';
+import { EventManagerError } from './EventManagerError';
 
 const { format } = winston;
-const {
-  combine,
-  printf,
-  metadata,
-  timestamp,
-  label,
-  colorize,
-  prettyPrint
-} = format;
+const { combine, printf, metadata, timestamp, label, colorize, prettyPrint } = format;
 
 export interface ICreateLoggerOptions {
   prefix?: string;
   level?: string;
-  transportMode?: "mute" | "console";
+  transportMode?: 'mute' | 'console';
 }
 
 /**
@@ -56,25 +48,21 @@ const errorPrinter = logform.format(info => {
 });
 
 const myFormat = printf(info => {
-  let meta = "";
+  let meta = '';
   if (info.metadata && Object.keys(info.metadata).length > 0) {
     // remove error instances
-    const filtered = Object.entries(info.metadata).filter(
-      ([k, m]) => !(m instanceof Error)
-    );
+    const filtered = Object.entries(info.metadata).filter(([k, m]) => !(m instanceof Error));
     if (filtered.length > 0) {
       meta = filtered.reduce((str, [k, v], index) => {
-        if (!(info.error && k === "stack")) {
+        if (!(info.error && k === 'stack')) {
           str += `${k}:${JSON.stringify(v)}, `;
         }
         return str;
-      }, "\n");
+      }, '\n');
     }
   }
 
-  const out = `${info.timestamp} [${info.label}] ${info.level}: ${
-    info.message
-  }`;
+  const out = `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
 
   return `${out}${meta}`;
 });
@@ -86,7 +74,7 @@ function createFormat(prefix: string) {
     label({ label: prefix }),
     colorize(),
     metadata({
-      fillExcept: ["message", "label", "timestamp", "level", "error"]
+      fillExcept: ['message', 'label', 'timestamp', 'level', 'error'],
     }),
     errorPrinter(),
     myFormat
@@ -96,21 +84,17 @@ interface ILogger extends winston.Logger {
   [k: string]: any;
 }
 let currentLogger: ILogger | null = null;
-export function createLogger({
-  prefix = "[RABBITMQ]",
-  level = "error",
-  transportMode = "console"
-}: ICreateLoggerOptions): void {
+export function createLogger({ prefix = '[RABBITMQ]', level = 'error', transportMode = 'console' }: ICreateLoggerOptions): void {
   if (currentLogger === null) {
     const transports: any[] = []; // winston interface are not that useful
-    if (transportMode === "mute") {
+    if (transportMode === 'mute') {
       transports.push(
         new winston.transports.Stream({
           stream: new Writable({
             write: () => {
               /* do nothing */
-            }
-          })
+            },
+          }),
         })
       );
     } else {
@@ -118,7 +102,7 @@ export function createLogger({
       transports.push(
         new winston.transports.Console({
           level,
-          format: createFormat(prefix)
+          format: createFormat(prefix),
         })
       );
     }
@@ -126,7 +110,7 @@ export function createLogger({
     currentLogger = winston.createLogger({
       level,
       format: winston.format.json(),
-      transports
+      transports,
     });
   }
 }
@@ -134,11 +118,11 @@ export function createLogger({
 export const LOGGER = new Proxy(({} as any) as ILogger, {
   get: (_, prop) => {
     if (currentLogger === null) {
-      throw new EventManagerError("Logger has not been inititialized");
+      throw new EventManagerError('Logger has not been inititialized');
     } else {
       return currentLogger[prop.toString()];
     }
-  }
+  },
 });
 
 export function setLogger(logger: ILogger | null) {

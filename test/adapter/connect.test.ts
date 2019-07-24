@@ -1,15 +1,15 @@
-import * as amqp from "amqplib";
-import { expect } from "chai";
-import { describe, it } from "mocha";
-import * as sinon from "sinon";
-import * as adapter from "../../src/adapter";
-import { EventManagerError } from "../../src/lib/EventManagerError";
-import { createLogger } from "../../src/lib/logger";
-describe("RabbitMQ Event Manager > Adapter > connect", () => {
+import * as amqp from 'amqplib';
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import * as sinon from 'sinon';
+import * as adapter from '../../src/adapter';
+import { EventManagerError } from '../../src/lib/EventManagerError';
+import { createLogger } from '../../src/lib/logger';
+describe('RabbitMQ Event Manager > Adapter > connect', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    createLogger({ transportMode: "mute" });
+    createLogger({ transportMode: 'mute' });
   });
   afterEach(async () => {
     await adapter.disconnect();
@@ -18,13 +18,13 @@ describe("RabbitMQ Event Manager > Adapter > connect", () => {
 
   it(`Should be able to connect to RabbitMQ`, async () => {
     /** given */
-    const url = "amqp://url";
+    const url = 'amqp://url';
     const expectedConnection = {
       close: sandbox.stub().resolves(),
-      connect: sandbox.stub().resolves()
+      connect: sandbox.stub().resolves(),
     };
 
-    sandbox.stub(amqp, "connect").resolves(expectedConnection as any);
+    sandbox.stub(amqp, 'connect').resolves(expectedConnection as any);
     /** when */
     const connection = await adapter.connect(url);
     /** then */
@@ -33,9 +33,9 @@ describe("RabbitMQ Event Manager > Adapter > connect", () => {
 
   it(`Should throw if error when trying to connect to RabbitMQ`, async () => {
     /** given */
-    const url = "amqp://url";
-    const rootCauseError = new Error("Connection error");
-    sandbox.stub(amqp, "connect").rejects(rootCauseError);
+    const url = 'amqp://url';
+    const rootCauseError = new Error('Connection error');
+    sandbox.stub(amqp, 'connect').rejects(rootCauseError);
     /** when */
     try {
       await adapter.connect(url);

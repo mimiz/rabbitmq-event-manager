@@ -1,14 +1,14 @@
-import { expect } from "chai";
-import { describe, it } from "mocha";
-import * as sinon from "sinon";
-import * as adapter from "../../src/adapter";
-import { createLogger } from "../../src/lib/logger";
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import * as sinon from 'sinon';
+import * as adapter from '../../src/adapter';
+import { createLogger } from '../../src/lib/logger';
 
-describe("RabbitMQ Event Manager, consume Event", () => {
+describe('RabbitMQ Event Manager, consume Event', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    createLogger({ transportMode: "mute" });
+    createLogger({ transportMode: 'mute' });
   });
   afterEach(() => {
     sandbox.restore();
@@ -17,21 +17,21 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
 
     const channel = {
-      consume: sandbox.stub()
+      consume: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, null);
     const listener = () => {
-      throw new Error("Should not be called");
+      throw new Error('Should not be called');
     };
     const options = {};
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(err.message).to.contains("Message received is null");
+        expect(err.message).to.contains('Message received is null');
         done();
       });
     /** then */
@@ -43,21 +43,21 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const message = 1; // not json parsable
     const channel = {
       consume: sandbox.stub(),
-      nack: sandbox.stub()
+      nack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = () => {
-      throw new Error("Should not be called");
+      throw new Error('Should not be called');
     };
     const options = {};
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(err.message).to.contains("Error Parsing message");
+        expect(err.message).to.contains('Error Parsing message');
         done();
       });
     /** then */
@@ -69,23 +69,21 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const message = 1; // not json parsable
     const channel = {
       consume: sandbox.stub(),
-      nack: sandbox.stub()
+      nack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = () => {
-      throw new Error("Should not be called");
+      throw new Error('Should not be called');
     };
     const options = {};
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(channel.nack.calledOnceWith(message, false, false)).to.equal(
-          true
-        );
+        expect(channel.nack.calledOnceWith(message, false, false)).to.equal(true);
         done();
       });
     /** then */
@@ -96,37 +94,35 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
 
     const channel = {
       consume: sandbox.stub(),
-      nack: sandbox.stub()
+      nack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = async () => {
-      throw new Error("Message is rejected");
+      throw new Error('Message is rejected');
     };
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(err.message).to.contains("Listener throws Error");
-        expect(channel.nack.calledOnceWith(message, false, false)).to.equal(
-          true
-        );
+        expect(err.message).to.contains('Listener throws Error');
+        expect(channel.nack.calledOnceWith(message, false, false)).to.equal(true);
         done();
       });
     /** then */
@@ -137,20 +133,20 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
 
     const channel = {
       consume: sandbox.stub(),
-      ack: sandbox.stub()
+      ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = () => {
@@ -159,7 +155,7 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
         expect(channel.ack.calledOnceWith(message)).to.equal(true);
@@ -174,7 +170,7 @@ describe("RabbitMQ Event Manager, consume Event", () => {
 
     const channel = {
       consume: sandbox.stub(),
-      ack: sandbox.stub()
+      ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, null);
     const listener = () => {
@@ -183,15 +179,13 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(err.message).to.contains(
-          "Message received is null or not defined"
-        );
+        expect(err.message).to.contains('Message received is null or not defined');
         done();
       });
   });
@@ -200,33 +194,33 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
     const channel = {
-      consume: sandbox.stub()
+      consume: sandbox.stub(),
     };
-    channel.consume.throws(new Error("Error Throwing"));
+    channel.consume.throws(new Error('Error Throwing'));
     const listener = () => {
       /** */
     };
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
-        expect(err.message).to.contains("Error Consuming queue");
+        expect(err.message).to.contains('Error Consuming queue');
         done();
       });
   });
@@ -235,26 +229,26 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
     const channel = {
       consume: sandbox.stub(),
-      ack: sandbox.stub()
+      ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = async () => true;
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
         expect(channel.ack.called).to.equal(true);
@@ -269,19 +263,19 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
     const channel = {
       consume: sandbox.stub(),
-      ack: sandbox.stub()
+      ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = async () => {
@@ -290,7 +284,7 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
         expect(channel.ack.called).to.equal(true);
@@ -305,37 +299,35 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 1
+        deliveryTag: 1,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
     const channel = {
       consume: sandbox.stub(),
-      nack: sandbox.stub()
+      nack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = async () => false;
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         /** then */
-        done(new Error("Should not be resolved"));
+        done(new Error('Should not be resolved'));
       })
       .catch(err => {
         expect(channel.nack.called).to.equal(true);
         expect(channel.nack.args).to.have.lengthOf(1);
         expect(channel.nack.args[0][0]).to.equal(message);
-        expect(err.message).to.contains(
-          "Listener of event returned not true, so requeue message."
-        );
+        expect(err.message).to.contains('Listener of event returned not true, so requeue message.');
         done();
       });
   });
@@ -345,21 +337,21 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     /** given */
     const message = {
       fields: {
-        deliveryTag: 11
+        deliveryTag: 11,
       },
       content: {
         toString() {
           return JSON.stringify({
-            _metas: { guid: "guid" }
+            _metas: { guid: 'guid' },
           });
-        }
-      }
+        },
+      },
     };
 
     const channel = {
       consume: sandbox.stub(),
       nack: sandbox.stub(),
-      ack: sandbox.stub()
+      ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
     const listener = () => {
@@ -368,7 +360,7 @@ describe("RabbitMQ Event Manager, consume Event", () => {
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
-      .consume(channel as any, "QUEUE", listener, options as any)
+      .consume(channel as any, 'QUEUE', listener, options as any)
       .then(() => {
         expect(channel.nack.called).to.equal(false);
         expect(channel.ack.called).to.equal(true);

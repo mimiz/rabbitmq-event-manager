@@ -6,8 +6,8 @@ module.exports = {
   semi: true,
   singleQuote: true, // default is false
   jsxSingleQuote: false,
-  trailingComma: "es5", // defaut is none
+  trailingComma: 'es5', // defaut is none
   bracketSpacing: true,
   jsxBracketSameLine: false, // default is true
-  arrowParens: "avoid",
-}
+  arrowParens: 'avoid',
+};

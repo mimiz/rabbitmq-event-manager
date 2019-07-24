@@ -1,3 +1,3 @@
-import { EventManager } from "./EventManager.class";
+import { EventManager } from './EventManager.class';
 
 export default EventManager;

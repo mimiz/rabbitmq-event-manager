@@ -1,10 +1,10 @@
-import { expect } from "chai";
-import { describe, it } from "mocha";
-import * as sinon from "sinon";
-import * as adapter from "../src/adapter";
-import EventManager from "../src/index";
-import { EventManagerError } from "../src/lib/EventManagerError";
-describe("RabbitMQ Event Manager, Initialize Manager  ", () => {
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import * as sinon from 'sinon';
+import * as adapter from '../src/adapter';
+import EventManager from '../src/index';
+import { EventManagerError } from '../src/lib/EventManagerError';
+describe('RabbitMQ Event Manager, Initialize Manager  ', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -15,9 +15,9 @@ describe("RabbitMQ Event Manager, Initialize Manager  ", () => {
 
   it(`Should be able to initialize Manager `, async () => {
     /** given */
-    const stubCreateChannel = sandbox.stub(adapter, "createChannel");
-    const stubCreateExchange = sandbox.stub(adapter, "createExchange");
-    const stubCreateQueue = sandbox.stub(adapter, "createQueue");
+    const stubCreateChannel = sandbox.stub(adapter, 'createChannel');
+    const stubCreateExchange = sandbox.stub(adapter, 'createExchange');
+    const stubCreateQueue = sandbox.stub(adapter, 'createQueue');
     const eventManager = new EventManager();
     /** when */
     await eventManager.initialize();
@@ -29,10 +29,10 @@ describe("RabbitMQ Event Manager, Initialize Manager  ", () => {
 
   it(`Should throws if error to initialize Manager `, async () => {
     /** given */
-    const stubCreateChannel = sandbox.stub(adapter, "createChannel");
-    const stubCreateExchange = sandbox.stub(adapter, "createExchange");
-    const stubCreateQueue = sandbox.stub(adapter, "createQueue");
-    const rootCauseError = new Error("Root Cause");
+    const stubCreateChannel = sandbox.stub(adapter, 'createChannel');
+    const stubCreateExchange = sandbox.stub(adapter, 'createExchange');
+    const stubCreateQueue = sandbox.stub(adapter, 'createQueue');
+    const rootCauseError = new Error('Root Cause');
     stubCreateQueue.onSecondCall().throws(rootCauseError);
     const eventManager = new EventManager();
     /** when */
