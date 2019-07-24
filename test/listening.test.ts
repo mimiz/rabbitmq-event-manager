@@ -108,4 +108,38 @@ describe('RabbitMQ Event Manager, Listening events ', () => {
       done();
     });
   });
+
+  it('Should be able to define some specific options to the queue when listening', done => {
+    /** given */
+    const createChannelStub = sandbox.stub(adapter, 'createChannel');
+    const createExchangeStub = sandbox.stub(adapter, 'createExchange');
+    createExchangeStub.resolves('event_name_listen');
+    const createQueueStub = sandbox.stub(adapter, 'createQueue');
+    const consumeStub = sandbox.stub(adapter, 'consume');
+    consumeStub.callsArg(2); // Call the listener
+
+    const eventManager = new EventManager();
+
+    const specificOptions = { ttl: 444 };
+    /** when */
+
+    eventManager.on(
+      'event_name_listen',
+      payload => {
+        /** then */
+        try {
+          expect(createQueueStub.args[0][1]).to.equal('application::event_name_listen');
+          expect(createQueueStub.args[0][2]).to.equal('event_name_listen');
+          expect(createQueueStub.args[0][3]).to.have.property('messageTtl');
+          if (createQueueStub.args[0][3]) {
+            expect(createQueueStub.args[0][3].messageTtl).to.equal(specificOptions.ttl);
+          }
+          done();
+        } catch (e) {
+          done(e);
+        }
+      },
+      specificOptions
+    );
+  });
 });

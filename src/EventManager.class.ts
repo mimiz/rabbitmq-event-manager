@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import * as adapter from './adapter';
 import { defaultOptions } from './lib/defaultOptions';
 import { EventManagerError } from './lib/EventManagerError';
-import { EventHandlerFunction, IEventManagerOptions, IEventPayload, OverrideMetasFunction } from './lib/interfaces';
+import { EventHandlerFunction, IEventManagerOptions, IEventPayload, OverrideMetasFunction, IListenerOption } from './lib/interfaces';
 import { createLogger, LOGGER } from './lib/logger';
 
 export class EventManager {
@@ -20,7 +20,7 @@ export class EventManager {
       transportMode: this.options.logTransportMode,
     });
   }
-  public async on(eventName: string, listener: EventHandlerFunction) {
+  public async on(eventName: string, listener: EventHandlerFunction, options?: IListenerOption) {
     try {
       LOGGER.debug(`Listening ${eventName} Event ...`);
       const channel = await adapter.createChannel(this.options.url);
@@ -28,8 +28,8 @@ export class EventManager {
       const exchangeName = await adapter.createExchange(channel, eventName, this.options.alternateExchangeName);
 
       await adapter.createQueue(channel, queueName, exchangeName, {
-        messageTtl: this.options.ttl,
-        deadLetterExchange: this.options.deadLetterExchangeName,
+        messageTtl: options ? options.ttl : this.options.ttl,
+        deadLetterExchange: options ? options.dlx : this.options.deadLetterExchangeName,
         arguments: {
           'x-dead-letter-routing-key': queueName,
         },

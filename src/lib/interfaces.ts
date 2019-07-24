@@ -25,3 +25,14 @@ export interface IEventManagerOptions {
   logPrefix: string;
   logTransportMode: 'console' | 'mute';
 }
+
+export interface IListenerOption {
+  /**
+   * The queue Time to live
+   */
+  ttl?: number;
+  /**
+   * Define another DeadLetterExhange (should have been defined prior usage)
+   */
+  dlx?: string;
+}
