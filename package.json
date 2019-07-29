@@ -25,7 +25,7 @@
     "setup": "yarn",
     "build": "tsc",
     "test": "cross-env NODE_ENV=test mocha --exit --timeout 30000 --recursive \"./test/**/*.test.ts\"",
-    "coverage": "cross-env NODE_ENV=test RABBITMQ_EVENT_MANAGER_TRANSPORT_MODE=mute nyc --all mocha --timeout 60000 --exit --recursive \"./test/**/*.test.ts\"",
+    "coverage": "cross-env NODE_ENV=test RABBITMQ_EVENT_MANAGER_TRANSPORT_MODE=mute nyc --all mocha --timeout 180000 --exit --recursive \"./test/**/*.test.ts\"",
     "prebuild": "rimraf build",
     "lint": "yarn run lint:format && yarn run lint:quality",
     "lint:fix": "yarn run lint:format:fix && yarn run lint:quality:fix",
