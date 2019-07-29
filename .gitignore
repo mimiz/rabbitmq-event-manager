@@ -2,9 +2,11 @@
 *.log
 npm-debug.log*
 build/
+.history/
 dist/
 docs/
 package/
+perso/
 # Runtime data
 pids
 *.pid

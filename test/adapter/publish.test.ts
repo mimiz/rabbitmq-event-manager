@@ -36,7 +36,7 @@ describe('RabbitMQ Event Manager > Adapter > publish', () => {
     /** when */
     const published = await adapter.publish(channel as any, exName, payload, options as any);
     /** then */
-    expect(published).to.equal(true);
+    expect(published).to.equal(payload);
   });
 
   it(`Should return false, if publihed reject`, async () => {

@@ -73,7 +73,7 @@ export async function createExchange(
   return name;
 }
 
-export function publish(channel: amqp.ConfirmChannel, exchangeName: string, payload: IEventPayload, options: IEventManagerOptions): Promise<boolean> {
+export function publish(channel: amqp.ConfirmChannel, exchangeName: string, payload: IEventPayload, options: IEventManagerOptions): Promise<IEventPayload> {
   LOGGER.debug(`Publish message to exchange ${exchangeName}`);
   return new Promise((resolve, reject) => {
     const stringPayload = JSON.stringify(payload);
@@ -94,7 +94,7 @@ export function publish(channel: amqp.ConfirmChannel, exchangeName: string, payl
         } else {
           LOGGER.info(`Message published to exchange ${exchangeName}`);
           LOGGER.debug('Message payload', payload);
-          resolve(true);
+          resolve(payload);
         }
       }
     );

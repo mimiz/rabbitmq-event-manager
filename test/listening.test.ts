@@ -3,7 +3,6 @@ import { describe, it } from 'mocha';
 import * as sinon from 'sinon';
 import * as adapter from '../src/adapter';
 import EventManager from '../src/index';
-import { IEventManagerOptions } from '../src/lib/interfaces';
 import { EventManagerError } from '../src/lib/EventManagerError';
 describe('RabbitMQ Event Manager, Listening events ', () => {
   let sandbox: sinon.SinonSandbox;
@@ -26,7 +25,7 @@ describe('RabbitMQ Event Manager, Listening events ', () => {
 
     /** when */
 
-    eventManager.on('event_name_listen', payload => {
+    eventManager.on('event_name_listen', async payload => {
       /** then */
       try {
         expect(createChannelStub.called).to.equal(true);
@@ -52,7 +51,7 @@ describe('RabbitMQ Event Manager, Listening events ', () => {
 
     /** when */
 
-    eventManager.on('event_name_listen', payload => {
+    eventManager.on('event_name_listen', async payload => {
       /** then */
       try {
         expect(createExchangeStub.args[0][1]).to.equal('event_name_listen');
@@ -76,7 +75,7 @@ describe('RabbitMQ Event Manager, Listening events ', () => {
 
     /** when */
 
-    eventManager.on('event_name_listen', payload => {
+    eventManager.on('event_name_listen', async payload => {
       /** then */
       try {
         expect(createQueueStub.args[0][1]).to.equal('application::event_name_listen');
@@ -125,7 +124,7 @@ describe('RabbitMQ Event Manager, Listening events ', () => {
 
     eventManager.on(
       'event_name_listen',
-      payload => {
+      async payload => {
         /** then */
         try {
           expect(createQueueStub.args[0][1]).to.equal('application::event_name_listen');

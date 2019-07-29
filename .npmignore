@@ -3,6 +3,7 @@ tsconfig.json
 .nojekyll
 docs/
 coverage/
+perso/
 test/
 .npmignore
 todo

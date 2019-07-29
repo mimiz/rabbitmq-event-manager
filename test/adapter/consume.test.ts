@@ -129,42 +129,6 @@ describe('RabbitMQ Event Manager, consume Event', () => {
     expect(true).to.not.equal(false);
   });
 
-  it(`Should ack a message if listener is not a promise`, done => {
-    /** given */
-    const message = {
-      fields: {
-        deliveryTag: 1,
-      },
-      content: {
-        toString() {
-          return JSON.stringify({
-            _metas: { guid: 'guid' },
-          });
-        },
-      },
-    };
-
-    const channel = {
-      consume: sandbox.stub(),
-      ack: sandbox.stub(),
-    };
-    channel.consume.callsArgWith(1, message);
-    const listener = () => {
-      /** */
-    };
-    const options = { maxNumberOfMessagesRetries: 10 };
-    /** when */
-    adapter
-      .consume(channel as any, 'QUEUE', listener, options as any)
-      .then(() => {
-        /** then */
-        expect(channel.ack.calledOnceWith(message)).to.equal(true);
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
-  });
   it(`Should reject if message is nil`, done => {
     /** given */
 
@@ -173,7 +137,7 @@ describe('RabbitMQ Event Manager, consume Event', () => {
       ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, null);
-    const listener = () => {
+    const listener = async () => {
       /** */
     };
     const options = { maxNumberOfMessagesRetries: 10 };
@@ -190,7 +154,7 @@ describe('RabbitMQ Event Manager, consume Event', () => {
       });
   });
 
-  it(`Should reject if error calling rabbitmq is nil`, done => {
+  it(`Should reject if error calling rabbitmq`, done => {
     /** given */
     const message = {
       fields: {
@@ -208,7 +172,7 @@ describe('RabbitMQ Event Manager, consume Event', () => {
       consume: sandbox.stub(),
     };
     channel.consume.throws(new Error('Error Throwing'));
-    const listener = () => {
+    const listener = async () => {
       /** */
     };
     const options = { maxNumberOfMessagesRetries: 10 };
@@ -244,7 +208,9 @@ describe('RabbitMQ Event Manager, consume Event', () => {
       ack: sandbox.stub(),
     };
     channel.consume.callsArgWith(1, message);
-    const listener = async () => true;
+    const listener = async () => {
+      return;
+    };
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */
     adapter
@@ -295,43 +261,6 @@ describe('RabbitMQ Event Manager, consume Event', () => {
       });
   });
 
-  it(`Should nack message and REQUEUE if listener resolves false`, done => {
-    /** given */
-    const message = {
-      fields: {
-        deliveryTag: 1,
-      },
-      content: {
-        toString() {
-          return JSON.stringify({
-            _metas: { guid: 'guid' },
-          });
-        },
-      },
-    };
-    const channel = {
-      consume: sandbox.stub(),
-      nack: sandbox.stub(),
-    };
-    channel.consume.callsArgWith(1, message);
-    const listener = async () => false;
-    const options = { maxNumberOfMessagesRetries: 10 };
-    /** when */
-    adapter
-      .consume(channel as any, 'QUEUE', listener, options as any)
-      .then(() => {
-        /** then */
-        done(new Error('Should not be resolved'));
-      })
-      .catch(err => {
-        expect(channel.nack.called).to.equal(true);
-        expect(channel.nack.args).to.have.lengthOf(1);
-        expect(channel.nack.args[0][0]).to.equal(message);
-        expect(err.message).to.contains('Listener of event returned not true, so requeue message.');
-        done();
-      });
-  });
-
   it(`Should ack message, event if deliveryTag > 10 (ISSUE #7)`, done => {
     // https://github.com/mimiz/rabbitmq-event-manager/issues/7
     /** given */
@@ -355,7 +284,7 @@ describe('RabbitMQ Event Manager, consume Event', () => {
     };
     channel.consume.callsArgWith(1, message);
     const listener = () => {
-      return Promise.resolve(true);
+      return Promise.resolve();
     };
     const options = { maxNumberOfMessagesRetries: 10 };
     /** when */

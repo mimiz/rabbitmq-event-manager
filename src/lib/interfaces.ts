@@ -3,13 +3,15 @@ export interface IEventPayloadMetas {
   name: string;
   application: string;
   timestamp: number;
+  correlationId?: string;
+  replyTo?: string;
   [k: string]: any;
 }
 export interface IEventPayload {
   [k: string]: any;
-  _metas?: IEventPayloadMetas;
+  _metas?: Partial<IEventPayloadMetas>;
 }
-export type EventHandlerFunction = (payload: IEventPayload) => void | Promise<boolean | void>;
+export type EventHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null>;
 export type OverrideMetasFunction = (metas: IEventPayloadMetas) => IEventPayloadMetas;
 export interface IEventManagerOptions {
   url: string;
@@ -24,6 +26,8 @@ export interface IEventManagerOptions {
   logLevel: 'error' | 'debug' | 'info' | 'warn';
   logPrefix: string;
   logTransportMode: 'console' | 'mute';
+  emitAndWaitTimeout: number;
+  defaultResponseSuffix: string;
 }
 
 export interface IListenerOption {
@@ -35,4 +39,8 @@ export interface IListenerOption {
    * Define another DeadLetterExhange (should have been defined prior usage)
    */
   dlx?: string;
+}
+
+export interface IEmitAndWaitOptions {
+  emitAndWaitTimeout?: number;
 }

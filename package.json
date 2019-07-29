@@ -24,7 +24,7 @@
   "scripts": {
     "setup": "yarn",
     "build": "tsc",
-    "test": "cross-env NODE_ENV=test mocha --recursive \"./test/**/*.test.ts\"",
+    "test": "cross-env NODE_ENV=test mocha --exit --timeout 30000 --recursive \"./test/**/*.test.ts\"",
     "coverage": "cross-env NODE_ENV=test RABBITMQ_EVENT_MANAGER_TRANSPORT_MODE=mute nyc --all mocha --recursive \"./test/**/*.test.ts\"",
     "prebuild": "rimraf build",
     "lint": "yarn run lint:format && yarn run lint:quality",
@@ -46,6 +46,7 @@
     "@types/sinon": "^7.0.11",
     "@types/triple-beam": "^1.3.0",
     "@types/uuid": "^3.4.4",
+    "axios": "^0.19.0",
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
     "husky": "^1.3.1",

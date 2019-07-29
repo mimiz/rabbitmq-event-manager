@@ -13,4 +13,6 @@ export const defaultOptions: IEventManagerOptions = {
   logLevel: 'error',
   logPrefix: 'RABBITMQ_EVENT_MANAGER',
   logTransportMode: 'console',
+  emitAndWaitTimeout: 30000,
+  defaultResponseSuffix: '.RESPONSE',
 };
