@@ -4,16 +4,17 @@ import { describe, it } from 'mocha';
 import * as sinon from 'sinon';
 import EventManager from '../src';
 import { pause } from '../src/lib/helper';
-import { IEventManagerOptions, IEventPayload } from '../src/lib/interfaces';
+import { IEventManagerOptions } from '../src/lib/interfaces';
 
 describe('RabbitMQ Event Manager, emit then wait response from multiple services', () => {
   let AMQP_URL: string;
   let sandbox: sinon.SinonSandbox;
   let eventManagers: EventManager[];
   let baseOptions: Partial<IEventManagerOptions>;
-  beforeEach(async () => {
+  beforeEach(async function() {
     // Connect to CloudAMQP
     if (!process.env.AMQP_URL) {
+      this.skip();
       throw new Error('Should define process.env.AMQP_URL');
     }
     AMQP_URL = process.env.AMQP_URL;

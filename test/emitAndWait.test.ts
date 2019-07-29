@@ -9,10 +9,11 @@ import { IEventManagerOptions, IEventPayload } from '../src/lib/interfaces';
 describe('RabbitMQ Event Manager, emit then wait response events ', () => {
   let sandbox: sinon.SinonSandbox;
   let eventManager: EventManager;
-  beforeEach(async () => {
+  beforeEach(async function() {
     // Connect to CloudAMQP
     const AMQP_URL = process.env.AMQP_URL;
     if (!AMQP_URL) {
+      this.skip();
       throw new Error('Should define process.env.AMQP_URL');
     }
     await clean(AMQP_URL);
