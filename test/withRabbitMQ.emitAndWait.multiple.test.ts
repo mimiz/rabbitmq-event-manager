@@ -6,7 +6,7 @@ import EventManager from '../src';
 import { pause } from '../src/lib/helper';
 import { IEventManagerOptions } from '../src/lib/interfaces';
 
-describe('RabbitMQ Event Manager, emit then wait response from multiple services', () => {
+describe('With RabbitMQ Event Manager, emit then wait response from multiple services', () => {
   let AMQP_URL: string;
   let sandbox: sinon.SinonSandbox;
   let eventManagers: EventManager[];

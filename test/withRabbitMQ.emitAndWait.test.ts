@@ -6,7 +6,7 @@ import EventManager from '../src';
 import { pause } from '../src/lib/helper';
 import { IEventManagerOptions, IEventPayload } from '../src/lib/interfaces';
 
-describe('RabbitMQ Event Manager, emit then wait response events ', () => {
+describe('With RabbitMQ Event Manager, emit then wait response events ', () => {
   let sandbox: sinon.SinonSandbox;
   let eventManager: EventManager;
   beforeEach(async function() {

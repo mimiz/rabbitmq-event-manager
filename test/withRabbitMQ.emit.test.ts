@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import EventManager from '../src';
 import { IEventManagerOptions, IEventPayload } from '../src/lib/interfaces';
 
-describe('RabbitMQ Event Manager, emit and listen events ', () => {
+describe('With RabbitMQ Event Manager, emit and listen events ', () => {
   let sandbox: sinon.SinonSandbox;
   let eventManager: EventManager;
   beforeEach(async function() {
