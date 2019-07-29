@@ -99,6 +99,7 @@ export class EventManager {
       const listen = () => {
         return new Promise(resolve => {
           this.on(replyTo, async (responsePayload: IEventPayload) => {
+            // TODO: Remove create queue ...
             resolve(responsePayload);
           });
         });
