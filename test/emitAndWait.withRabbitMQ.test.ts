@@ -58,7 +58,7 @@ describe('RabbitMQ Event Manager, emit then wait response events ', () => {
     expect(responsePayload.result).to.equal(100);
   });
 
-  it('Should be able to emit and wait for response one instance', async () => {
+  it('Should be able to emit and wait for response one instance two times', async () => {
     /** given */
     const payload1 = {
       a: 43,

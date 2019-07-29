@@ -180,41 +180,4 @@ describe('RabbitMQ Event Manager, emitting events ', () => {
         done();
       });
   });
-
-  it('Should return payload (with _metas) when emitting', async () => {
-    /** given */
-    sandbox.stub(adapter, 'createChannel');
-    sandbox.stub(adapter, 'createExchange');
-    sandbox.stub(adapter, 'publish').resolvesArg(2);
-
-    const payload = { url: 'http://url.com' };
-    const eventManager = new EventManager();
-    /** when */
-    const newPayload = await eventManager.emit('event_name', payload);
-    /** then */
-    expect(newPayload).to.not.equal(undefined);
-    expect(newPayload).to.have.property('_metas');
-    expect(newPayload._metas).to.have.property('guid');
-    expect(newPayload.url).to.equal(payload.url);
-  });
-
-  it('Should be able to add some _metas informations when emmitting', async () => {
-    /** given */
-    sandbox.stub(adapter, 'createChannel');
-    sandbox.stub(adapter, 'createExchange');
-    sandbox.stub(adapter, 'publish').resolvesArg(2);
-
-    const payload = { _metas: { expected: 'expected' }, url: 'http://url.com' };
-    const eventManager = new EventManager();
-    /** when */
-    const newPayload = await eventManager.emit('event_name', payload);
-    /** then */
-    expect(newPayload).to.not.equal(undefined);
-    expect(newPayload).to.have.property('_metas');
-    expect(newPayload._metas).to.have.property('expected');
-    expect(newPayload.url).to.equal(payload.url);
-    if (newPayload._metas) {
-      expect(newPayload._metas.expected).to.equal('expected');
-    }
-  });
 });

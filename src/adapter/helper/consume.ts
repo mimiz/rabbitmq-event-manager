@@ -1,13 +1,12 @@
 import * as amqp from 'amqplib';
 import { EventManagerError } from '../../lib/EventManagerError';
-import { EventHandlerFunction, IEventManagerOptions, IEventPayload } from '../../lib/interfaces';
+import { ConsumeHandlerFunction, IEventManagerOptions, IEventPayload } from '../../lib/interfaces';
 import { LOGGER } from '../../lib/logger';
 
-export function consume(channel: amqp.Channel, queueName: string, listener: EventHandlerFunction, options: IEventManagerOptions): Promise<IEventPayload | void | null> {
+export function consume(channel: amqp.Channel, queueName: string, listener: ConsumeHandlerFunction, options: IEventManagerOptions): Promise<IEventPayload | void | null> {
   LOGGER.info(`Consume messages of queue  ${queueName}`);
   return new Promise((resolve, reject) => {
     try {
-      console.log(queueName);
       channel.consume(queueName, message => {
         LOGGER.debug(`Message received on queue  ${queueName}`);
         if (message) {

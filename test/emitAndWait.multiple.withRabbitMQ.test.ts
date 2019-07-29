@@ -21,7 +21,7 @@ describe('RabbitMQ Event Manager, emit then wait response from multiple services
     await clean(AMQP_URL);
     baseOptions = {
       url: AMQP_URL,
-      logLevel: 'info',
+      logLevel: 'error',
       application: 'unittest',
     };
 
@@ -89,9 +89,7 @@ describe('RabbitMQ Event Manager, emit then wait response from multiple services
 
     await pause(500);
     const add1 = await emA.emitAndWait('add', { a: 3, b: 42 });
-    console.log('add1 : ', add1);
     const add2 = await emA.emitAndWait('add', { a: 3, b: 3 });
-    console.log('add2 : ', add2);
     await pause(500);
     /** then */
     expect(add1.result).to.equal(45);
@@ -119,9 +117,7 @@ describe('RabbitMQ Event Manager, emit then wait response from multiple services
     });
     await pause(500);
     const multiply = await emA.emitAndWait('calculate', { operation: 'multiply', a: 3, b: 42 });
-    console.log('multiply : ', multiply);
     const divide = await emA.emitAndWait('calculate', { operation: 'divide', a: 3, b: 3 });
-    console.log('divide : ', divide);
     await pause(500);
     /** then */
     expect(multiply.result).to.equal(126);
@@ -143,8 +139,6 @@ async function clean(amqpUrl: string) {
     const deleteUrl = `${url}/queues/${vhost}/${queue.name}`;
     try {
       await axios.delete(`${deleteUrl}`);
-      // tslint:disable-next-line: no-console
-      console.log(`${queue.name} was deleted`);
     } catch (err) {
       throw err;
     }

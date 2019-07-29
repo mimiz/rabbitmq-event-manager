@@ -22,13 +22,6 @@ Or with Yarn
 yarn add rabbitmq-event-manager
 ```
 
-## ChangeLog
-
-### Version 2.0.0
-
-- Add emitAndWait function
-- No `on` listener needs to be a promise
-
 ## Basic Example
 
 - **Initialize**
@@ -58,9 +51,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 
 The `return` statement at the end of the handler function, will tell RabbitMQ to _"acknowledge"_ the message.
 
-You can _"negatively acknowledge"_ and **Requeue** the message by returning `false` (rejecting the Promise).
-
-If you don't want to **requeue** the message you can simply throw an exception ...
+If you want to **flush** the message you can simply throw an exception ...
 
 - **Producer**
 
@@ -70,6 +61,8 @@ const myEventManager = new EventManager({ url: 'amqp://localhost', appName: 'PRO
 
 myEventManager.emit('MY_EVENT_NAME', payload);
 ```
+
+**Note:** Since versio **1.1.0** the `emit` function return a promise that resolves with the payload effectively sent to RabbitMQ (ie: with `_metas`).
 
 This will create the following elements in RabbitMQ :
 
@@ -91,6 +84,26 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 
 It will add a queue `OTHER_CONSUMER::MY_EVENT_NAME` bound to the Exchange `MY_EVENT_NAME`.
 
+## Emit And Wait
+
+This feature has been introduced in version **1.1.0**, and allow you to emit an event and wait for a response (from another event, or from a generated event name).
+
+```js
+import EventManager from 'rabbitmq-event-manager';
+const myEventManager = new EventManager({ url: 'amqp://localhost', appName: 'PRODUCER_1' });
+const payload = { a: 42, b: 58 };
+myEventManager.on('add', async eventPayload => {
+  return { result: eventPayload.a + eventPayload.b };
+});
+const response = await myEventManager.emitAndWait('add', payload);
+
+console.log(response.result); // 100
+```
+
+The above code, will generate a queue with a name : `add.RESPONSE.$$GUID$$` where guid is the value of `_metas.correlationId`.
+
+This queue should be deleted after event is received, if something wrong happened, the message may be flushed to the Dead letter queue.
+
 ## Options
 
 | Name                       | Type                  | Default                | Description                                                                                                                                                             |
@@ -107,6 +120,8 @@ It will add a queue `OTHER_CONSUMER::MY_EVENT_NAME` bound to the Exchange `MY_EV
 | logPrefix                  | string                | [RABBITMQ]             | The text that will be printed before the error log                                                                                                                      |
 | logLevel                   | string                | error                  | The log Level [(see winston logLevels)](https://github.com/winstonjs/winston#logging-levels)                                                                            |
 | logTransportMode           | string                | console                | Mute (no log), or output to console. Possible values are (_"console"_ or _"mute"_)                                                                                      |
+| emitAndWaitTimeout         | number                | 30000 (30s)            | Define the maximum time to wait for a event                                                                                                                             |
+| defaultResponseSuffix      | string                | `.RESPONSE`            | The suffix to add to response event name when waiting for a response                                                                                                    |
 
 ## Metas Informations
 
@@ -116,6 +131,8 @@ By defaut, some metas data are added to the payload :
 - timestamp : A number of milliseconds elapsed since January 1, 1970 00:00:00 UTC. (`Date.now()`)
 - name : A string which is the name of the emitted event.
 - applicationName: The value of the application which emits the Event.
+- correlationId: _(optional)_ a unique ID (guid) to be used when waiting for a response when using `emitAndWait`
+- replyTo: _(optional)_ the event to reply to when waiting for a response when using `emitAndWait`
 
 So if your payload is :
 
@@ -189,6 +206,32 @@ myEventManagerOverrideMetas.emit('MY_EVENT_NAME', payload);
 // }
 ```
 
+### Add metas per events
+
+Since version **1.1.0** you can add (or override) the `_metas` property by setting it in the event paylaod :
+
+```js
+import EventManager from 'rabbitmq-event-manager';
+const myEventManagerOverrideMetas = new EventManager({
+  url: 'amqp://localhost',
+  appName: 'PRODUCER_1',
+});
+const payload = { _metas: { newKey: 'value' }, userId: 42 };
+myEventManagerOverrideMetas.emit('MY_EVENT_NAME', payload);
+// Payload will be
+// {
+//    _metas: {
+//        guid : '465e008c-d37f-4e31-b494-023e6d187947'
+//        name: 'MY_EVENT_NAME',
+//        timestamp: 1519211809934,
+//        newKey:'value'
+//    }
+//    userId:42
+// }
+```
+
+This will be added only for this `emit`.
+
 ## DEAD LETTER QUEUE
 
 From the RabbitMQ documenation, the [Dead Letter Exchange](https://www.rabbitmq.com/dlx.html) is a RabbitMQ Exchange, that is attached to a queue. And message in that queue can be _"dead-lettered"_ if the queue reach its _length limit_, or, if the messages has _expired_ (TTL) and also if the message is _negatively acknowledged_ with requeue option set to false.
@@ -219,7 +262,7 @@ You can _"negatively acknowledge"_ and **Requeue** the message by returning `fal
 
 If you don't want to **requeue** the message you can simply throw an exception ...
 
-### Acknowledge the message (remove from queue)
+### Acknowledge the message
 
 ```js
 import EventManager from 'rabbitmq-event-manager';
@@ -234,7 +277,7 @@ myEventManager.on('MY_EVENT_NAME', async (payload)=>{
 
 After the message is acknowledged, it will be removed from the queue and deleted.
 
-### Negatively Acknowledge and Flush the message
+### Flush the message
 
 ```js
 import EventManager from 'rabbitmq-event-manager';
@@ -300,3 +343,14 @@ The Queue `CONSUMER::MY_EVENT_NAME` is configured with the _DEAD LETTER EXHANGE_
 ### Requeue with delay
 
 It could be very intersting to _"negatively acknowledge"_ a message and ask to be requeue after a delay, but this will be (if can) in version 2 !
+
+### ChangeLog
+
+- **Version 1.1.0**
+  - Add ability to `emitAndWait` (emit an event and wait for a response).
+  - `emit` now returns the _"full"_ payload (with real `_metas` sent to RabbitMQ)
+  - Add ability to define (or override) some values in `_metas` when emitting.
+  - Add possility to defined the duration for a message to be _flushed_, change the TTL of the queue created for the event (on listen).
+    `eventManager.on(eventName, listener , {ttl:1000})` will be send to the dead letter exchange after one second;
+  - Add possility to defined a specific dead letter exchange for a message to be _flushed_ to, change the DLX of the queue created for the event (on listen).
+    `eventManager.on(eventName, listener , {dlx:'new_dlx', ttl:2000})` will be send the flushed message to the dead letter **new_dlx** after two second

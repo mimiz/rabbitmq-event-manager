@@ -13,8 +13,8 @@ Project:
     ✘ Ajouter une "validation" des options ? @cancelled(19-07-25 08:00)
     ✔ Add an _"init"_ method @done(19-07-25 08:00)
     version 1.1.0:
-        - Add possibility to define a specific TTL for a given listener
-        - Return payload when emitting (payload with the _metas)
-        - Add possibility to add some keys in _metas (using __metas);
-        - Add emitAndWait
+        ✔ Add possibility to define a specific TTL for a given listener @done(19-07-29 17:48)
+        ✔ Return payload when emitting (payload with the _metas) @done(19-07-29 17:48)
+        ✔ Add possibility to add some keys in _metas (using __metas); @done(19-07-29 17:48)
+        ✔ Add emitAndWait @done(19-07-29 17:48)
 

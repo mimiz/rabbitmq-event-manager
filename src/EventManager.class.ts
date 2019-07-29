@@ -79,7 +79,6 @@ export class EventManager {
       LOGGER.info(`EmitAndWait : ${eventName}`);
       let replyTo = replyToName ? replyToName : `${eventName}${this.options.defaultResponseSuffix}`;
       const correlationId = uuid();
-
       replyTo += `.${correlationId}`;
       const overrideMetas = payload._metas
         ? {
@@ -98,17 +97,26 @@ export class EventManager {
 
       const listen = () => {
         return new Promise(resolve => {
-          this.on(replyTo, async (responsePayload: IEventPayload) => {
-            // TODO: Remove create queue ...
+          this.on(replyTo, (responsePayload: IEventPayload) => {
             resolve(responsePayload);
           });
         });
       };
+
       const duration = options && options.emitAndWaitTimeout ? options.emitAndWaitTimeout : this.options.emitAndWaitTimeout;
       const timeoutMessage = `Timeout Error after ${duration} milliseconds for event ${eventName} and correlationId ${correlationId} `;
 
       Promise.race([timeout(duration, timeoutMessage), listen()])
-        .then((payload: any) => resolve(payload))
+        .then((payload: any) => {
+          resolve(payload);
+          // cleaning
+          // Putting in setTimeout to be done after every thing else;
+          setImmediate(async () => {
+            const channel = await adapter.createChannel(this.options.url);
+            const queueName = `${this.options.application}::${replyTo}`;
+            await adapter.deleteQueue(channel, queueName);
+          });
+        })
         .catch(reject);
       const payloadEmitted = await this.emit(eventName, newPayload);
       LOGGER.info(`EmitAndWait : ${eventName}`, { payload: payloadEmitted });

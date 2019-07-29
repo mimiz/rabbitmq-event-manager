@@ -11,8 +11,10 @@ export interface IEventPayload {
   [k: string]: any;
   _metas?: Partial<IEventPayloadMetas>;
 }
-export type EventHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null>;
+export type ConsumeHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null>;
+export type EventHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null> | IEventPayload | void | null;
 export type OverrideMetasFunction = (metas: IEventPayloadMetas) => IEventPayloadMetas;
+
 export interface IEventManagerOptions {
   url: string;
   application: string;

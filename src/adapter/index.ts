@@ -117,3 +117,4 @@ export async function createQueue(channel: amqp.ConfirmChannel, queueName: strin
 }
 
 export { consume } from './helper/consume';
+export { deleteQueue } from './helper/deleteQueue';
