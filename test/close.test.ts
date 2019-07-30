@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { describe, it } from "mocha";
-import * as sinon from "sinon";
-import * as adapter from "../src/adapter";
-import EventManager from "../src/index";
-describe("RabbitMQ Event Manager, Close Manager  ", () => {
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import * as sinon from 'sinon';
+import * as adapter from '../src/adapter';
+import EventManager from '../src/index';
+describe('RabbitMQ Event Manager, Close Manager  ', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -14,7 +14,7 @@ describe("RabbitMQ Event Manager, Close Manager  ", () => {
 
   it(`Should be able to close Manager `, async () => {
     /** given */
-    const stubDisconnect = sandbox.stub(adapter, "disconnect");
+    const stubDisconnect = sandbox.stub(adapter, 'disconnect');
     const eventManager = new EventManager();
     /** when */
     await eventManager.close();

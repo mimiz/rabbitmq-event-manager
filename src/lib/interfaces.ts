@@ -3,18 +3,18 @@ export interface IEventPayloadMetas {
   name: string;
   application: string;
   timestamp: number;
+  correlationId?: string;
+  replyTo?: string;
   [k: string]: any;
 }
 export interface IEventPayload {
   [k: string]: any;
-  _metas?: IEventPayloadMetas;
+  _metas?: Partial<IEventPayloadMetas>;
 }
-export type EventHandlerFunction = (
-  payload: IEventPayload
-) => void | Promise<boolean | void>;
-export type OverrideMetasFunction = (
-  metas: IEventPayloadMetas
-) => IEventPayloadMetas;
+export type ConsumeHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null>;
+export type EventHandlerFunction = (payload: IEventPayload) => Promise<IEventPayload | void | null> | IEventPayload | void | null;
+export type OverrideMetasFunction = (metas: IEventPayloadMetas) => IEventPayloadMetas;
+
 export interface IEventManagerOptions {
   url: string;
   application: string;
@@ -25,7 +25,24 @@ export interface IEventManagerOptions {
   deadLetterQueueName: string;
   ttl: number;
   maxNumberOfMessagesRetries: number;
-  logLevel: "error" | "debug" | "info" | "warn";
+  logLevel: 'error' | 'debug' | 'info' | 'warn';
   logPrefix: string;
-  logTransportMode: "console" | "mute";
+  logTransportMode: 'console' | 'mute';
+  emitAndWaitTimeout: number;
+  defaultResponseSuffix: string;
+}
+
+export interface IListenerOption {
+  /**
+   * The queue Time to live
+   */
+  ttl?: number;
+  /**
+   * Define another DeadLetterExhange (should have been defined prior usage)
+   */
+  dlx?: string;
+}
+
+export interface IEmitAndWaitOptions {
+  emitAndWaitTimeout?: number;
 }

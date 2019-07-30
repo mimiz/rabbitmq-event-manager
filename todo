@@ -8,7 +8,13 @@ Project:
         ✔ Application Name @done(19-04-06 09:55)
         ✔ Add Metas (guid) or function to *prepare* payload @done(19-04-06 09:55)
     ✘ ~~Maybe create a _mock_ version~~ @cancelled(19-04-13 09:16)
-    ✔ Should be able to listen event before creating the Exchange @done(19-04-13 09:16)
-    ☐ Ajouter du "logging" @started(19-04-13 09:15)
-    ☐ Ajouter une "validation" des options ?
-    ☐ Add an _"init"_ method
+    ✔ Should be able to listen event before creating the Exchange @done(19-07-25 08:00)
+    ✔ Ajouter du "logging" @started(19-04-13 09:15) @done(19-07-25 08:00) @lasted(14w4d22h45m44s)
+    ✘ Ajouter une "validation" des options ? @cancelled(19-07-25 08:00)
+    ✔ Add an _"init"_ method @done(19-07-25 08:00)
+    version 1.1.0:
+        ✔ Add possibility to define a specific TTL for a given listener @done(19-07-29 17:48)
+        ✔ Return payload when emitting (payload with the _metas) @done(19-07-29 17:48)
+        ✔ Add possibility to add some keys in _metas (using __metas); @done(19-07-29 17:48)
+        ✔ Add emitAndWait @done(19-07-29 17:48)
+
