@@ -234,7 +234,7 @@ This will be added only for this `emit`.
 
 ## DEAD LETTER QUEUE
 
-From the RabbitMQ documenation, the [Dead Letter Exchange](https://www.rabbitmq.com/dlx.html) is a RabbitMQ Exchange, that is attached to a queue. And message in that queue can be _"dead-lettered"_ if the queue reach its _length limit_, or, if the messages has _expired_ (TTL) and also if the message is _negatively acknowledged_ with requeue option set to false.
+From the RabbitMQ documenation, the [Dead Letter Exchange](https://www.rabbitmq.com/dlx.html) is a RabbitMQ Exchange, that is attached to a queue. And message in that queue can be _"dead-lettered"_ if the queue reach its _length limit_, or, if the messages has _expired_ (TTL).
 
 By default, The Exchange `DEAD_LETTER_EXCHANGE` (and its bound queue `DEAD_LETTER_QUEUE`) is automatically created and attached to all queues.
 
@@ -343,14 +343,3 @@ The Queue `CONSUMER::MY_EVENT_NAME` is configured with the _DEAD LETTER EXHANGE_
 ### Requeue with delay
 
 It could be very intersting to _"negatively acknowledge"_ a message and ask to be requeue after a delay, but this will be (if can) in version 2 !
-
-### ChangeLog
-
-- **Version 1.1.0**
-  - Add ability to `emitAndWait` (emit an event and wait for a response).
-  - `emit` now returns the _"full"_ payload (with real `_metas` sent to RabbitMQ)
-  - Add ability to define (or override) some values in `_metas` when emitting.
-  - Add possility to defined the duration for a message to be _flushed_, change the TTL of the queue created for the event (on listen).
-    `eventManager.on(eventName, listener , {ttl:1000})` will be send to the dead letter exchange after one second;
-  - Add possility to defined a specific dead letter exchange for a message to be _flushed_ to, change the DLX of the queue created for the event (on listen).
-    `eventManager.on(eventName, listener , {dlx:'new_dlx', ttl:2000})` will be send the flushed message to the dead letter **new_dlx** after two second
