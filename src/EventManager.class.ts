@@ -76,7 +76,7 @@ export class EventManager {
 
   public async emitAndWait(eventName: string, payload: IEventPayload, replyToName?: string, options?: IEmitAndWaitOptions): Promise<IEventPayload> {
     return new Promise(async (resolve, reject) => {
-      LOGGER.info(`EmitAndWait : ${eventName}`);
+      LOGGER.debug(`Emitting ${eventName} Message and waiting ...`);
       let replyTo = replyToName ? replyToName : `${eventName}${this.options.defaultResponseSuffix}`;
       const correlationId = uuid();
       replyTo += `.${correlationId}`;
