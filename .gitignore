@@ -4,6 +4,7 @@ npm-debug.log*
 build/
 .history/
 dist/
+.vscode/
 docs/
 package/
 perso/

@@ -115,6 +115,7 @@ export class EventManager {
             const channel = await adapter.createChannel(this.options.url);
             const queueName = `${this.options.application}::${replyTo}`;
             await adapter.deleteQueue(channel, queueName);
+            await adapter.deleteExchange(channel, replyTo);
           });
         })
         .catch(reject);
