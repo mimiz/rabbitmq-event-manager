@@ -1,3 +1,4 @@
+import { ConfirmChannel } from 'amqplib';
 import { v4 as uuid } from 'uuid';
 import * as adapter from './adapter';
 import { defaultOptions } from './lib/defaultOptions';
@@ -106,19 +107,27 @@ export class EventManager {
       const duration = options && options.emitAndWaitTimeout ? options.emitAndWaitTimeout : this.options.emitAndWaitTimeout;
       const timeoutMessage = `Timeout Error after ${duration} milliseconds for event ${eventName} and correlationId ${correlationId} `;
 
+      let channel: ConfirmChannel;
+      let queueName: string;
       Promise.race([timeout(duration, timeoutMessage), listen()])
         .then((payload: any) => {
           resolve(payload);
           // cleaning
           // Putting in setTimeout to be done after every thing else;
           setImmediate(async () => {
-            const channel = await adapter.createChannel(this.options.url);
-            const queueName = `${this.options.application}::${replyTo}`;
+            channel = await adapter.createChannel(this.options.url);
+            queueName = `${this.options.application}::${replyTo}`;
             await adapter.deleteQueue(channel, queueName);
             await adapter.deleteExchange(channel, replyTo);
           });
         })
-        .catch(reject);
+        .catch(() => {
+          setImmediate(async () => {
+            await adapter.deleteQueue(channel, queueName);
+            await adapter.deleteExchange(channel, replyTo);
+          });
+          reject();
+        });
       const payloadEmitted = await this.emit(eventName, newPayload);
       LOGGER.info(`EmitAndWait : ${eventName}`, { payload: payloadEmitted });
     });
