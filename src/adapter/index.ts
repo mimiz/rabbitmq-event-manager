@@ -44,6 +44,7 @@ export async function createChannel(url: string): Promise<amqp.ConfirmChannel> {
       const connection = await amqp.connect(url);
       channel = await connection.createConfirmChannel();
     }
+
     LOGGER.info(`Channel Created on ${url}`);
     return channel;
   } catch (e) {
