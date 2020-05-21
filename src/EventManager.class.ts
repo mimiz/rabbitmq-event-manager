@@ -111,20 +111,20 @@ export class EventManager {
       let queueName: string;
       Promise.race([timeout(duration, timeoutMessage), listen()])
         .then((payload: any) => {
-          resolve(payload);
           // cleaning
           // Putting in setTimeout to be done after every thing else;
           setImmediate(async () => {
             channel = await adapter.createChannel(this.options.url);
             queueName = `${this.options.application}::${replyTo}`;
-            await adapter.deleteQueue(channel, queueName);
-            await adapter.deleteExchange(channel, replyTo);
+            adapter.deleteQueue(channel, queueName);
+            adapter.deleteExchange(channel, replyTo);
+            resolve(payload); // only resolve after cleanup to avoid chaining crashes
           });
         })
         .catch(() => {
           setImmediate(async () => {
-            await adapter.deleteQueue(channel, queueName);
-            await adapter.deleteExchange(channel, replyTo);
+            adapter.deleteQueue(channel, queueName);
+            adapter.deleteExchange(channel, replyTo);
           });
           reject();
         });
