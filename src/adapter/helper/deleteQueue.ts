@@ -7,7 +7,7 @@ export async function deleteQueue(channel: amqp.ConfirmChannel, queueName: strin
     await channel.deleteQueue(queueName);
     LOGGER.debug(`Queue ${queueName} deleted`);
   } catch (err) {
-    LOGGER.error(`Unable to delete queue ${queueName}`, { error: err });
+    LOGGER.error(`Unable to delete queue ${queueName}`, err);
     throw new EventManagerError(`Unable to delete queue ${queueName}`, err);
   }
 }

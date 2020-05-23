@@ -23,7 +23,7 @@ export function consume(channel: amqp.Channel, queueName: string, listener: Cons
                 reject(new EventManagerError('Listener throws Error, message has been flushed', err));
               });
           } catch (e) {
-            LOGGER.error(`Message unreadable, unable to parse JSON parsed on ${queueName}, flushing...`, { error: e });
+            LOGGER.error(`Message unreadable, unable to parse JSON parsed on ${queueName}, flushing...`, e);
             flushMessage({
               message,
               channel,

@@ -1,17 +1,17 @@
-import axios from 'axios';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import * as sinon from 'sinon';
-import EventManager from '../src';
+import { EventManager } from '../src/EventManager.class';
 import { pause } from '../src/lib/helper';
 import { IEventManagerOptions } from '../src/lib/interfaces';
+import { clean } from './helper';
 
 describe('With RabbitMQ Event Manager, emit then wait response from multiple services', () => {
   let AMQP_URL: string;
   let sandbox: sinon.SinonSandbox;
   let eventManagers: EventManager[];
   let baseOptions: Partial<IEventManagerOptions>;
-  beforeEach(async function() {
+  beforeEach(async function () {
     // Connect to CloudAMQP
     if (!process.env.AMQP_URL) {
       this.skip();
@@ -124,23 +124,3 @@ describe('With RabbitMQ Event Manager, emit then wait response from multiple ser
     expect(divide.result).to.equal(1);
   });
 }).timeout(45000);
-
-/**
- * helper function to delete all
- */
-async function clean(amqpUrl: string) {
-  const amqpHttp = amqpUrl.replace('amqp://', 'https://');
-  const vhost = amqpHttp.substr(amqpHttp.lastIndexOf('/') + 1);
-  const httpUrl = amqpHttp.substr(0, amqpHttp.lastIndexOf('/'));
-  const url = `${httpUrl}/api`;
-
-  const { data: queues } = await axios.get(`${url}/queues`);
-  for (const queue of queues) {
-    const deleteUrl = `${url}/queues/${vhost}/${queue.name}`;
-    try {
-      await axios.delete(`${deleteUrl}`);
-    } catch (err) {
-      throw err;
-    }
-  }
-}

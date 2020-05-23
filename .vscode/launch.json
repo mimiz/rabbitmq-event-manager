@@ -9,7 +9,9 @@
             "name": "Mocha File",
             "env": {
                 "NODE_ENV": "test",
-                "AMQP_URL": "amqp://fuiumzqj:yhNpO9T9NB-1ox45hBHxiyYmboeAJ7h3@bullfrog.rmq.cloudamqp.com/fuiumzqj"
+                "AMQP_URL1": "amqp://fuiumzqj:yhNpO9T9NB-1ox45hBHxiyYmboeAJ7h3@bullfrog.rmq.cloudamqp.com/fuiumzqj",
+                "AMQP_URL": "amqp://btbadmin:password@localhost",
+                "HTTP_URL": "http://btbadmin:password@localhost:15672"
             },
             "cwd": "${workspaceFolder}",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",

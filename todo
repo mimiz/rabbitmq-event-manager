@@ -17,4 +17,14 @@ Project:
         ✔ Return payload when emitting (payload with the _metas) @done(19-07-29 17:48)
         ✔ Add possibility to add some keys in _metas (using __metas); @done(19-07-29 17:48)
         ✔ Add emitAndWait @done(19-07-29 17:48)
+    version 1.2.0:
+        ✔ Rework Logger to better integration of error with winston @done(20-05-09 15:27)
+        ✔ Upgrade dependencies version and remove unused @done(20-05-09 15:27)
+        ✔ Remove emit-and-wait branch as it is merged already @done(20-05-09 15:35)
+        ✔ Rewrite documentation (Readme.md) to match new signature @critical @done(20-05-21 11:07)
+        ✔ Rework demos to match the last version @high @done(20-05-23 11:14)
+        ✔ Fix and work on issue #15 @done(20-05-23 11:21)
+        ✔ Write a _"contribute"_ documentation to explain how to push / test / propose. @low @done(20-05-23 11:21)
+        ☐ Write a dev documentation, for me, to explain how to create a new version (with npm and travis). @high
+        ☐ Write a full exemple article @low 
 
