@@ -40,4 +40,9 @@ or on a single line
 rabbitmqctl stop_app && rabbitmqctl reset && rabbitmqctl start_app
 ```
 
+## Push to Github
+
+As `yarn test` is executed before push, and as some tests needs a RabbitMQ server.
+We need to set an environment variable : `export AMQP_URL=amqp://admin:password@localhost` for the tests to run.
+
 ## Tag and Publish

@@ -12,6 +12,8 @@ describe('With RabbitMQ Event Manager, emit and listen events ', () => {
     // Connect to CloudAMQP
     const AMQP_URL = process.env.AMQP_URL;
     if (!AMQP_URL) {
+      // tslint:disable-next-line: no-console
+      console.log(`AMQP_URL is not defined`);
       this.skip();
     }
     await clean(AMQP_URL);
