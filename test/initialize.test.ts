@@ -2,8 +2,9 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import * as sinon from 'sinon';
 import * as adapter from '../src/adapter';
-import EventManager from '../src/index';
+import { EventManager } from '../src/EventManager.class';
 import { EventManagerError } from '../src/lib/EventManagerError';
+
 describe('RabbitMQ Event Manager, Initialize Manager  ', () => {
   let sandbox: sinon.SinonSandbox;
   beforeEach(() => {

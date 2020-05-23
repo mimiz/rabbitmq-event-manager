@@ -7,7 +7,7 @@ export async function deleteExchange(channel: amqp.ConfirmChannel, exchangeName:
     await channel.deleteExchange(exchangeName);
     LOGGER.debug(`Exchange ${exchangeName} deleted`);
   } catch (err) {
-    LOGGER.error(`Unable to delete Exchange ${exchangeName}`, { error: err });
+    LOGGER.error(`Unable to delete Exchange ${exchangeName}`, err);
     throw new EventManagerError(`Unable to delete Exchange ${exchangeName}`, err);
   }
 }

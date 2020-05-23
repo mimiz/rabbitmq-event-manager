@@ -1,6 +1,6 @@
 import * as amqp from 'amqplib';
 import { EventManagerError } from '../lib/EventManagerError';
-import { EventHandlerFunction, IEventManagerOptions, IEventPayload } from '../lib/interfaces';
+import { IEventManagerOptions, IEventPayload } from '../lib/interfaces';
 import { LOGGER } from '../lib/logger';
 
 let connection: amqp.Connection | null = null;
@@ -70,7 +70,7 @@ export async function createExchange(
   }
 
   await channel.assertExchange(name, 'fanout', exOptions);
-  LOGGER.info(`Echange ${name} created`);
+  LOGGER.info(`Exchange ${name} created`);
   return name;
 }
 
@@ -118,5 +118,5 @@ export async function createQueue(channel: amqp.ConfirmChannel, queueName: strin
 }
 
 export { consume } from './helper/consume';
-export { deleteQueue } from './helper/deleteQueue';
 export { deleteExchange } from './helper/deleteExchange';
+export { deleteQueue } from './helper/deleteQueue';

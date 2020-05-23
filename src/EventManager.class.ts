@@ -13,6 +13,7 @@ export class EventManager {
   constructor(options?: Partial<IEventManagerOptions>) {
     this.options = { ...defaultOptions, ...options };
     this.createLogger();
+    LOGGER.debug('Event Manager initialized');
   }
 
   private createLogger() {
@@ -54,7 +55,8 @@ export class EventManager {
         });
       };
 
-      await adapter.consume(channel, queueName, newListener, this.options);
+      adapter.consume(channel, queueName, newListener, this.options);
+      return;
     } catch (e) {
       LOGGER.error(`Unable to listen event ${eventName}`, e);
       throw new EventManagerError(`Unable to listen event ${eventName}`, e);
@@ -62,22 +64,28 @@ export class EventManager {
   }
   public async emit(eventName: string, payload: IEventPayload): Promise<IEventPayload> {
     try {
-      LOGGER.debug(`Emitting ${eventName} Message ...`);
+      LOGGER.info(`Emitting ${eventName} Message ...`);
+      LOGGER.debug(`Event ${eventName}, payload received`, { payload });
       // we should create the metas information here
       payload = this.addMetasToPayload(payload, eventName);
+      LOGGER.debug(`Event ${eventName}, payload emitted`, { payload });
       const channel = await adapter.createChannel(this.options.url);
+
       await adapter.createExchange(channel, eventName, this.options.alternateExchangeName);
       const returnedPayload = await adapter.publish(channel, eventName, payload, this.options);
+
       LOGGER.debug(`Message ${eventName} Emitted`);
       return returnedPayload;
     } catch (err) {
+      LOGGER.error(err);
       throw new EventManagerError(`Unable to emit event ${eventName}`, err);
     }
   }
 
   public async emitAndWait(eventName: string, payload: IEventPayload, replyToName?: string, options?: IEmitAndWaitOptions): Promise<IEventPayload> {
     return new Promise(async (resolve, reject) => {
-      LOGGER.debug(`Emitting ${eventName} Message and waiting ...`);
+      LOGGER.info(`Emitting ${eventName} Message and waiting ...`);
+      LOGGER.debug(`Event ${eventName}, payload received`, { payload, replyToName });
       let replyTo = replyToName ? replyToName : `${eventName}${this.options.defaultResponseSuffix}`;
       const correlationId = uuid();
       replyTo += `.${correlationId}`;
@@ -110,21 +118,19 @@ export class EventManager {
       let channel: ConfirmChannel;
       let queueName: string;
       Promise.race([timeout(duration, timeoutMessage), listen()])
-        .then((payload: any) => {
+        .then(async (payload: any) => {
+          channel = await adapter.createChannel(this.options.url);
+          queueName = `${this.options.application}::${replyTo}`;
+          await adapter.deleteQueue(channel, queueName);
+          await adapter.deleteExchange(channel, replyTo);
           resolve(payload);
-          // cleaning
-          // Putting in setTimeout to be done after every thing else;
-          setImmediate(async () => {
-            channel = await adapter.createChannel(this.options.url);
-            queueName = `${this.options.application}::${replyTo}`;
-            await adapter.deleteQueue(channel, queueName);
-            await adapter.deleteExchange(channel, replyTo);
-          });
         })
         .catch(() => {
           setImmediate(async () => {
-            await adapter.deleteQueue(channel, queueName);
-            await adapter.deleteExchange(channel, replyTo);
+            if (channel) {
+              await adapter.deleteQueue(channel, queueName);
+              await adapter.deleteExchange(channel, replyTo);
+            }
           });
           reject();
         });
