@@ -45,7 +45,7 @@
     "@types/node": "^11.13.0",
     "@types/sinon": "^9.0.0",
     "@types/uuid": "^7.0.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chai": "^4.2.0",
     "cross-env": "^7.0.2",
     "husky": "^4.2.5",
